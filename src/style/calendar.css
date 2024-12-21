@@ -1,0 +1,16 @@
+.Calendar_bt_today {
+  border-radius: 5px;
+  background-color: var(--main);
+  color: white;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  height: 31.6px;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: all .3s linear;
+}
+
+.Calendar_bt_today:hover {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}

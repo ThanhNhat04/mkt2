@@ -1,0 +1,54 @@
+.wrap {
+  display: flex;
+  padding: 1px 8px;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background-color: white;
+  transition: all .3s linear;
+}
+
+
+.icon {
+  padding-right: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.icon_wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #8B0000;
+  transition: all .2s linear;
+}
+
+.icon_wrap:hover {
+  transform: translateY(-2px);
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.icon_wrap svg {
+  color: white;
+}
+
+.create {
+  padding: 6px 16px;
+  background-color: var(--main);
+  border-radius: 3px;
+}
+
+
+.btb {
+  padding: 8px 0;
+  background-color: var(--main);
+  border-radius: 5px;
+  color: white;
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+  cursor: pointer;
+}

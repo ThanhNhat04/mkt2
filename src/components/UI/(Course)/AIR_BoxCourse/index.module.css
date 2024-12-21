@@ -1,0 +1,41 @@
+.wrap {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  width: calc(100% - 32px);
+  transition: all .3s linear
+}
+
+.wrap:hover {
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px
+}
+
+.courseAvt {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background-color: var(--main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: white;
+  font-weight: 500;
+}
+
+.title_text1 {
+  font-weight: bold;
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+}
