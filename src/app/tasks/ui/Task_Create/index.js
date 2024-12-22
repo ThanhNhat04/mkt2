@@ -1,215 +1,74 @@
-// 'use client';
-
-// import { useState } from 'react';
-// import Popup_Form from '@/utils/Extensions_UI/Popup_Form';
-// import Box from '@mui/material/Box';
-// import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
-// import CircularProgress from '@mui/material/CircularProgress';
-// import Backdrop from '@mui/material/Backdrop';
-// import { getTodayDate, setValueInpue } from '@/app/function';
-
-// export default function Task_Create({ dataType, dataProject, token, user, users, projects }) {
-//   let today = getTodayDate()
-//   const type = dataType.map(item => ({
-//     label: item.name,
-//     value: item.id
-//   }));
-
-//   const project = dataProject.map(item => ({
-//     label: item.name,
-//     value: item.id
-//   }));
-
-
-//   let doers = setValueInpue(users, 'Name', '_id')
-
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   const fields = [
-//     {
-//       type: 'select',
-//       name: 'project',
-//       label: 'Dự án',
-//       required: true,
-//       options: project,
-//     },
-//     {
-//       type: 'select',
-//       name: 'taskCategory',
-//       label: 'Loại công việc',
-//       required: true,
-//       options: type,
-//     },
-//     {
-//       type: 'select',
-//       name: 'doer',
-//       label: 'Người thực hiện',
-//       required: true,
-//       defaultValue: user,
-//       options: doers,
-//     },
-//     {
-//       type: 'input',
-//       name: 'name',
-//       label: 'Tên công việc',
-//       required: true,
-//     },
-//     {
-//       type: 'date',
-//       name: 'startDate',
-//       label: 'Thời gian bắt đầu',
-//       defaultValue: today,
-//       required: true,
-//     },
-//     {
-//       type: 'date',
-//       name: 'endDate',
-//       label: 'Thời gian kết thúc',
-//       defaultValue: today,
-//       required: true,
-//     },
-//     {
-//       type: 'textarea',
-//       name: 'detail',
-//       label: 'Chi tiết công việc',
-//       required: true,
-//     },
-//     {
-//       type: 'textarea',
-//       name: 'notes',
-//       label: 'Ghi chú',
-//     },
-
-
-//   ];
-
-//   const openai = async () => {
-//     const res = await fetch('/api/openAi', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         messages: [{
-//           role: 'user', content:
-//             `Hãy kể tên các loài chó`
-//         }]
-//       }),
-//     });
-//     if (!res.ok) {
-//       alert('Bạn không có quyền thực hiện tính năng này')
-//     } else {
-//       const datas = await res.json();
-//       setchat(datas.choices[0].message.content)
-//       setstatus('Gửi cho phụ huynh')
-//     }
-//   }
-
-//   const handleSave = async (data) => {
-//     data.doer = user
-//     data.doerDone = false
-//     data.checkerDone = false
-//     setIsLoading(true)
-
-//     for (let i in dataProject) {
-//       if (dataProject[i].id == data.project) {
-//         data.checker = dataProject[i].leader[0]
-//       }
-//     }
-
-//     // try {
-//     //   const response = await fetch('https://todo.tr1nh.net/api/task', {
-//     //     method: 'POST',
-//     //     headers: {
-//     //       'Content-Type': 'application/json',
-//     //       'Authorization': `Bearer ${token}`,
-//     //     },
-//     //     body: JSON.stringify(data),
-//     //   });
-
-//     //   setIsLoading(false);
-
-//     //   if (response.ok) {
-//     //     window.location.reload();
-//     //   } else {
-//     //     const errorData = await response.json();
-//     //     alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
-//     //   }
-//     // } catch (error) {
-//     //   setIsLoading(false);
-//     //   alert(`Đã xảy ra lỗi: ${error.message}`);
-//     // }
-//   };
-
-//   return (
-//     <>
-//       <Box sx={{ width: 'max-content', height: '100%' }}>
-//         <Popup_Form
-//           button={
-//             <div className='flexCenter' style={{ height: 39, background: 'var(--main)', p: 0, borderRadius: 3, cursor: 'pointer', color: 'white', padding: '0 16px', gap: 8 }} >
-//               <AddBoxRoundedIcon sx={{ color: 'white', fontSize: 18 }} /> Thêm công việc
-//             </div>
-//           }
-//           title="Tạo công việc"
-//           fields={fields}
-//           onSave={openai}
-//         />
-//       </Box>
-//       <Backdrop
-//         sx={{ color: '#fff', zIndex: 99999 }}
-//         open={isLoading}
-//       >
-//         <CircularProgress color="inherit" />
-//       </Backdrop>
-//     </>
-//   );
-// }
+'use client'
 
 import React, { useState } from 'react';
-import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Box, CircularProgress } from '@mui/material';
+import { Button, Dialog, TextField, Box, CircularProgress } from '@mui/material';
+import { getTodayDate } from '@/app/function';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
-export default function TaskCreate({ dataProject }) {
+export default function TaskCreate({ dataProject, users, projects, dataType, token, user }) {
   const project = dataProject.map((item) => ({
     label: item.name,
     value: item.id,
   }));
+  const type = dataType.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+  const person = users.map((item) => ({
+    label: item.Name,
+    value: item._id,
+  }));
 
+  const today = getTodayDate();
+  // ==============================
+  //  1. Khai báo state
+  // ==============================
   const [open, setOpen] = useState(false);
+  const [openx, setOpenx] = useState(false);
   const [formData, setFormData] = useState({
+    doer: user,
     project: '',
-    taskType: '',
-    taskName: '',
-    startDate: '',
-    endDate: '',
-    details: '',
+    taskCategory: '',
+    name: '',
+    startDate: today,
+    endDate: today,
+    detail: '',
     notes: '',
   });
+
+
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [aiError, setAiError] = useState('');
 
+  // ==============================
+  //  2. Mở/đóng Dialog
+  // ==============================
   const handleClickOpen = () => {
-    const today = new Date();
+    const todayDate = new Date();
     const nextMonth = new Date();
-    nextMonth.setMonth(today.getMonth() + 1);
+    nextMonth.setMonth(todayDate.getMonth() + 1);
 
     setFormData((prev) => ({
       ...prev,
-      startDate: today.toISOString().split('T')[0],
+      startDate: todayDate.toISOString().split('T')[0], // format YYYY-MM-DD
       endDate: nextMonth.toISOString().split('T')[0],
     }));
-
     setOpen(true);
   };
-
+  const handleClosex = () => setOpenx(false)
   const handleClose = () => {
     setOpen(false);
     setFormData({
+      doer: '',
       project: '',
-      taskType: '',
-      taskName: '',
+      taskCategory: '',
+      name: '',
       startDate: '',
       endDate: '',
       details: '',
@@ -219,46 +78,72 @@ export default function TaskCreate({ dataProject }) {
     setAiError('');
   };
 
-  const handleChange = (name) => (event, value) => {
-    setFormData({ ...formData, [name]: value || event.target.value });
-    setErrors({ ...errors, [name]: null });
+  // ==============================
+  //  3. Hàm handleChange
+  // ==============================
+  // Hàm này linh hoạt cho cả TextField và Select,
+  // event.target.value là giá trị người dùng nhập/chọn
+  const handleChange = (name) => (event) => {
+    const newValue = event.target.value; // Lấy giá trị từ sự kiện
+    console.log(newValue);
+
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
+
+    // Xóa lỗi tương ứng khi người dùng nhập liệu
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: null,
+    }));
   };
 
+  // ==============================
+  //  4. Validate form
+  // ==============================
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.taskName) newErrors.taskName = 'Tên công việc là bắt buộc';
+    if (!formData.name) newErrors.name = 'Tên công việc là bắt buộc';
     if (!formData.startDate) newErrors.startDate = 'Thời gian bắt đầu là bắt buộc';
     if (!formData.endDate) newErrors.endDate = 'Thời gian kết thúc là bắt buộc';
     if (!formData.project) newErrors.project = 'Dự án là bắt buộc';
-    if (!formData.taskType) newErrors.taskType = 'Loại công việc là bắt buộc';
+    if (!formData.taskCategory) newErrors.taskCategory = 'Loại công việc là bắt buộc';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // ==============================
+  //  5. Lưu (Save)
+  // ==============================
   const handleSave = () => {
+    console.log(validateForm());
+
     if (validateForm()) {
-      console.log('Saved data:', formData);
+      console.log('Dữ liệu form:', formData);
       handleClose();
-    }
+    } else { setOpenx(true) }
   };
 
+  // ==============================
+  //  6. Gọi OpenAI (nếu cần)
+  // ==============================
   const fetchAISuggestions = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch('/api/openAi', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [{
-            role: 'user', content:
-              `Hãy đề xuất các bước cụ thể để thực hiện công việc khoảng 300 kí tự: ${formData.taskName}`
+            role: 'user',
+            content: `Hãy đề xuất các bước cụ thể để thực hiện công việc khoảng 300 kí tự: ${formData.taskName}`,
           }]
         }),
       });
       if (!res.ok) {
-        alert('Bạn không có quyền thực hiện tính năng này')
+        alert('Bạn không có quyền thực hiện tính năng này');
       } else {
         const datas = await res.json();
         const suggestion = datas.choices[0].message.content || 'Không có gợi ý từ AI';
@@ -268,7 +153,7 @@ export default function TaskCreate({ dataProject }) {
       console.error('Error fetching AI suggestion:', error);
       setAiError('Không thể lấy gợi ý từ AI. Vui lòng thử lại sau.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -277,123 +162,229 @@ export default function TaskCreate({ dataProject }) {
       <Button variant="outlined" onClick={handleClickOpen}>
         Tạo công việc
       </Button>
-      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
-        <DialogTitle>Tạo công việc</DialogTitle>
-        <DialogContent sx={{ minHeight: '500px', minWidth: '800px' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Grid container spacing={2}>
-              {/* Cột bên trái */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  sx={{ paddingBottom: '14px' }}
-                  label="Tên công việc *"
-                  name="taskName"
-                  value={formData.taskName}
-                  variant="filled"
-                  onChange={handleChange('taskName')}
-                  error={!!errors.taskName}
-                  helperText={errors.taskName}
-                  required
-                  fullWidth
-                />
-                <Autocomplete
-                  sx={{ paddingBottom: '14px' }}
-                  options={project}
-                  getOptionLabel={(option) => option.label}
-                  onChange={handleChange('project')}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Dự án *" error={!!errors.project} helperText={errors.project} />
-                  )}
-                  fullWidth
-                />
-                <Autocomplete
-                  sx={{ paddingBottom: '14px' }}
-                  options={[{ label: 'Phát triển phần mềm' }, { label: 'Thiết kế UI' }]}
-                  getOptionLabel={(option) => option.label}
-                  onChange={handleChange('taskType')}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Loại công việc *" error={!!errors.taskType} helperText={errors.taskType} />
-                  )}
-                  fullWidth
-                />
-                <TextField
-                  sx={{ paddingBottom: '14px' }}
-                  label="Thời gian bắt đầu *"
-                  name="startDate"
-                  type="date"
-                  value={formData.startDate}
-                  onChange={handleChange('startDate')}
-                  error={!!errors.startDate}
-                  helperText={errors.startDate}
-                  required
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                <TextField
-                  sx={{ paddingBottom: '14px' }}
-                  label="Thời gian kết thúc *"
-                  name="endDate"
-                  type="date"
-                  value={formData.endDate}
-                  onChange={handleChange('endDate')}
-                  error={!!errors.endDate}
-                  helperText={errors.endDate}
-                  required
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                <TextField
-                  sx={{ paddingBottom: '14px' }}
-                  label="Ghi chú"
-                  name="notes"
-                  value={formData.notes}
-                  variant="filled"
-                  onChange={handleChange('notes')}
-                  multiline
-                  rows={2}
-                  fullWidth
-                />
-              </Grid>
 
-              {/* Cột bên phải */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  sx={{ paddingBottom: '16px' }}
-                  label="Chi tiết công việc *"
-                  name="details"
-                  value={formData.details}
-                  variant="filled"
-                  onChange={handleChange('details')}
-                  required
-                  multiline
-                  rows={14}
-                  fullWidth
-                />
-                <Button
-                  onClick={fetchAISuggestions}
-                  variant="outlined"
-                  color="primary"
-                  disabled={loading || !formData.taskName}
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
+        {/* Tiêu đề */}
+        <div className='text_2' style={{ borderBottom: '2px solid var(--background_1)', padding: 16 }}>
+          Tạo công việc
+        </div>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: '8px 16px', pt: '16px' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size='small'
+                sx={{ paddingBottom: '8px' }}
+                label="Tên công việc *"
+                name="name"
+                value={formData.name}
+                variant="filled"
+                onChange={handleChange('name')}
+                error={!!errors.name}
+                required
+                fullWidth
+              />
+
+              {/* Loại công việc */}
+              <FormControl
+                size='small'
+                variant="filled"
+                fullWidth
+                margin="normal"
+                sx={{ my: 1 }}
+              >
+                <InputLabel id="taskType-label">Loại công việc</InputLabel>
+                <Select
+                  labelId="taskType-label"
+                  label="Loại công việc"
+                  value={formData.taskCategory}
+                  onChange={handleChange('taskCategory')}
+                  error={!!errors.taskCategory}
                 >
-                  {loading ? <CircularProgress size={24} /> : 'Gợi ý từ AI'}
-                </Button>
-                {aiError && <p style={{ color: 'red', marginTop: '8px' }}>{aiError}</p>}
-              </Grid>
+                  {type.map((t) => (
+                    <MenuItem key={t.value} value={t.value}>
+                      {t.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Dự án */}
+              <FormControl
+                size='small'
+                variant="filled"
+                fullWidth
+                margin="normal"
+                sx={{ my: 1 }}
+              >
+                <InputLabel id="project-label">Dự án</InputLabel>
+                <Select
+                  labelId="project-label"
+                  label="Dự án"
+                  value={formData.project}
+                  onChange={handleChange('project')}
+                  error={!!errors.project}
+                >
+                  {project.map((p) => (
+                    <MenuItem key={p.value} value={p.value}>
+                      {p.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Người thực hiện */}
+              <FormControl
+                size='small'
+                variant="filled"
+                fullWidth
+                margin="normal"
+                sx={{ my: 1 }}
+              >
+                <InputLabel id="doer-label">Người thực hiện</InputLabel>
+                <Select
+                  labelId="doer-label"
+                  label="Người thực hiện"
+                  value={formData.doer}
+                  onChange={handleChange('doer')}
+                >
+                  {person.map((t) => (
+                    <MenuItem key={t.value} value={t.value}>
+                      {t.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Thời gian bắt đầu */}
+              <TextField
+                variant="filled"
+                size='small'
+                sx={{ my: 1 }}
+                label="Thời gian bắt đầu *"
+                name="startDate"
+                type="date"
+                value={formData.startDate}
+                onChange={handleChange('startDate')}
+                error={!!errors.startDate}
+                helperText={errors.startDate}
+                required
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+
+              {/* Thời gian kết thúc */}
+              <TextField
+                label="Thời gian kết thúc *"
+                name="endDate"
+                type="date"
+                value={formData.endDate}
+                onChange={handleChange('endDate')}
+                error={!!errors.endDate}
+                helperText={errors.endDate}
+                required
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="filled"
+                size='small'
+                sx={{ my: 1 }}
+              />
+
+              {/* Ghi chú */}
+              <TextField
+                label="Ghi chú"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange('notes')}
+                multiline
+                rows={2}
+                fullWidth
+                variant="filled"
+                size='small'
+                sx={{ my: 1 }}
+              />
             </Grid>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
+
+            {/* --------- Cột Phải --------- */}
+            <Grid item xs={12} sm={6}>
+              {/* Nút gọi AI */}
+              <Button
+                sx={{ mb: '18px' }}
+                onClick={fetchAISuggestions}
+                variant="outlined"
+                color="primary"
+                disabled={loading || !formData.name}
+              >
+                {loading ? <CircularProgress size={24} /> : 'Gợi ý từ AI'}
+              </Button>
+
+              {/* Chi tiết công việc */}
+              <TextField
+                label="Chi tiết công việc *"
+                name="details"
+                value={formData.detail}
+                variant="filled"
+                onChange={handleChange('detail')}
+                required
+                multiline
+                rows={16}
+                fullWidth
+              />
+              {aiError && <p style={{ color: 'red', marginTop: '8px' }}>{aiError}</p>}
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Footer */}
+        <div
+          style={{
+            borderTop: '2px solid var(--background_1)',
+            padding: 16,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 8
+          }}
+        >
+          <Button onClick={handleClose}>
             Thoát
           </Button>
           <Button onClick={handleSave} variant="contained" color="primary">
-            Lưu
+            Tạo công việc
           </Button>
-        </DialogActions>
+        </div>
+      </Dialog>
+      <Dialog
+        open={openx}
+        onClose={handleClosex}
+        maxWidth="sm"
+        fullWidth>
+        {/* Tiêu đề */}
+        <div className='text_2' style={{ borderBottom: '2px solid var(--background_1)', padding: 16 }}>
+          Thông báo
+        </div>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: '16px' }}>
+          <p className='text_3_m'>Bạn chưa điền đủ các thông tin cần thiết để thêm công việc!</p>
+        </Box>
+
+        {/* Footer */}
+        <div
+          style={{
+            borderTop: '2px solid var(--background_1)',
+            padding: '8px 16px',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 8
+          }}
+        >
+          <Button onClick={handleClosex} variant="contained" color="primary">
+            Tiếp tục
+          </Button>
+        </div>
       </Dialog>
     </>
   );
