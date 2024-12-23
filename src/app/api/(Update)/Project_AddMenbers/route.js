@@ -44,13 +44,6 @@ export async function POST(request) {
       );
     }
 
-
-    // const updatedTask = await PostTask.findOneAndUpdate(
-    //   { _id: taskId },
-    //   { $push: { subTask: subTask } },
-    //   { new: true }
-    // );
-
     return NextResponse.json({ air: 2, mes: 'Thêm thành viên thành công', data: updatedProject }, { status: 200 })
 
   } catch (error) {

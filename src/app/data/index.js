@@ -41,6 +41,16 @@ export async function Task_Read_Type() {
   return data
 }
 
+export async function Tool_Read_all() {
+  let data
+  try {
+    data = await fetchApi('/apptool', { method: 'POST', body: { source: 1 } });
+  } catch (error) {
+    data = null
+  }
+  return data
+}
+
 
 export async function Department_Read_all(ab) {
   let data

@@ -18,6 +18,7 @@ export default function SideBar() {
     "/project": "Dự án",
     "/personnel": "Nhân sự",
     "/contents": "Nội dung",
+    "/app-ui": "Công cụ",
     "/progress": "Hướng dẫn"
   }
 

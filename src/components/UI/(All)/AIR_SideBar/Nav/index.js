@@ -8,6 +8,7 @@ import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import WorkIcon from '@mui/icons-material/Work';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 import SourceIcon from '@mui/icons-material/Source';
+import ExtensionIcon from '@mui/icons-material/Extension';
 
 export default function Nav({ expanded, text, action }) {
   let icon = ''
@@ -19,6 +20,12 @@ export default function Nav({ expanded, text, action }) {
     }} />)
   } else if (action[1] == '/project') {
     icon = (<WorkIcon sx={{
+      height: '25px',
+      color: 'inherit',
+      transition: 'all .3s ease-out'
+    }} />)
+  } else if (action[1] == '/app-ui') {
+    icon = (<ExtensionIcon sx={{
       height: '25px',
       color: 'inherit',
       transition: 'all .3s ease-out'
