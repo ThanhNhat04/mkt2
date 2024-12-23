@@ -24,13 +24,14 @@ export async function POST(request) {
     if (!Project.leader.includes(user.id)) {
       return NextResponse.json({ air: 1, mes: 'Bạn không có quyền thêm thành viên vào dự án' }, { status: 400 })
     }
+    let updatedProject;
     if (role == 1) {
       updatedProject = await PostProject.findOneAndUpdate(
         { _id: project },
         { $addToSet: { leader: members } },
         { new: true }
       );
-    } else if (role == 0) {
+    } else if (role == 2) {
       updatedProject = await PostProject.findOneAndUpdate(
         { _id: project },
         { $addToSet: { members: members } },
@@ -50,9 +51,11 @@ export async function POST(request) {
     //   { new: true }
     // );
 
-    return NextResponse.json({ air: 2, mes: 'Thêm thành viên thành công', data: updatedProject}, { status: 200 })
+    return NextResponse.json({ air: 2, mes: 'Thêm thành viên thành công', data: updatedProject }, { status: 200 })
 
   } catch (error) {
+    console.log(error);
+
     return NextResponse.json(
       { air: 0, mes: error.message, data: null },
       { status: error.message === 'Authentication failed' ? 401 : 500 }

@@ -18,6 +18,7 @@ import Card from '@mui/material/Card';
 import Project_AddMember from '../Project_ID_Create';
 
 export default function Main({ project, department, user }) {
+
   const members = getFtoF(project.members, user, '_id')
   const leader = getFtoF(project.leader, user, '_id')
   const departmentInP = getFtoF(project.department, department, '_id')
@@ -172,7 +173,9 @@ export function Tasks({ data }) {
 }
 
 
-export function User({ members, leader, user }) {
+export function User({ data, members, leader, user }) {
+  console.log(data);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const allUsers = useMemo(() => {
@@ -231,7 +234,7 @@ export function User({ members, leader, user }) {
           <option value="Thành viên">Thành viên</option>
         </select>
 
-        <Project_AddMember users={user} members={allUsers} />
+        <Project_AddMember project={data._id} users={user} members={allUsers} />
       </div>
 
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>

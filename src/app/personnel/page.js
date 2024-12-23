@@ -1,20 +1,12 @@
-import RoleList from '@/components/UI/(Personnal)/RoleList';
-import UserList from '@/components/UI/(Personnal)/UserList';
-import fetchApi from '@/utils/API_suport/fetchData';
+import { User_Read_all } from '@/app/data'
+import UserList from './ui/wraplist';
 
 export default async function Page_Personnel() {
-  let allUser;
-  try {
-    allUser = await fetchApi('/user', { method: 'POST', body: JSON.stringify({ source: 1 }) })
-  } catch (error) {
-    allUser = null
-  }
-  console.log(allUser);
+  let data = await User_Read_all()
 
   return (
     <>
-      {/* <RoleList data={allUser} per={allPer} /> */}
-      {/* <UserList data={allUser} /> */}
+      <UserList data={data} />
     </>
   );
 }

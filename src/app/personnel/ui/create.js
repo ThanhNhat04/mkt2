@@ -7,42 +7,52 @@ import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 import { setValueInpue } from '@/app/function';
-import fetchApi from '@/utils/API_suport/fetchData';
 
-export default function Project_AddMember({ users, members, project }) {
-
-
-  const idsInArray2 = new Set(members.map(item => item._id));
-  const filteredArray = users.filter(item => !idsInArray2.has(item._id));
-  const SelectUser = setValueInpue(filteredArray, 'Name', '_id')
+export default function Personnel_create() {
 
   const [isLoading, setIsLoading] = useState(false);
   const fields = [
     {
-      type: 'select',
-      name: 'members',
+      type: 'input',
+      name: 'User',
       label: 'Thành viên',
       required: true,
-      options: SelectUser,
     },
     {
-      type: 'select',
-      name: 'role',
+      type: 'input',
+      name: 'Role',
       label: 'Vai trò',
       required: true,
-      options: [
-        { label: 'Thành viên', value: 2 },
-        { label: 'Quản lý', value: 1 }
-      ],
     }
   ];
 
   const handleSave = async (data) => {
     setIsLoading(true)
-    data.project = project
-    try {
-      await fetchApi('/Project_AddMenbers', { method: 'POST', body: JSON.stringify(data) });
-    } catch (error) { console.log(error) }
+    console.log(data);
+
+    // try {
+    //   const response = await fetch('https://todo.tr1nh.net/api/task', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify(data),
+    //   });
+
+    //   setIsLoading(false);
+
+    //   if (response.ok) {
+    //     window.location.reload();
+    //   } else {
+    //     const errorData = await response.json();
+    //     alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
+    //   }
+    // } catch (error) {
+    //   setIsLoading(false);
+    //   alert(`Đã xảy ra lỗi: ${error.message}`);
+    // }
+
     setIsLoading(false)
   };
 
@@ -52,7 +62,7 @@ export default function Project_AddMember({ users, members, project }) {
         <Popup_Form
           button={
             <div className='flexCenter' style={{ height: 39, background: 'var(--main)', p: 0, borderRadius: 3, cursor: 'pointer', color: 'white', padding: '0 16px', gap: 8 }} >
-              <AddBoxRoundedIcon sx={{ color: 'white', fontSize: 18 }} /> Thêm dự án
+              <AddBoxRoundedIcon sx={{ color: 'white', fontSize: 18 }} /> Thêm thành viên
             </div>
           }
           title="Thêm thành viên"
