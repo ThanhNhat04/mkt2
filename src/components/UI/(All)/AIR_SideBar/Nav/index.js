@@ -7,6 +7,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import WorkIcon from '@mui/icons-material/Work';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
+import SourceIcon from '@mui/icons-material/Source';
 
 export default function Nav({ expanded, text, action }) {
   let icon = ''
@@ -40,6 +41,12 @@ export default function Nav({ expanded, text, action }) {
       color: 'inherit',
       transition: 'all .3s ease-out'
     }} />)
+  } else if (action[1] == '/contents') {
+    icon = (<SourceIcon sx={{
+      height: '25px',
+      color: 'inherit',
+      transition: 'all .3s ease-out'
+    }} />)
   }
   else {
     icon = (<AnalyticsRoundedIcon sx={{
@@ -57,9 +64,9 @@ export default function Nav({ expanded, text, action }) {
           margin: '4px',
           borderRadius: '5px',
           '&:hover': {
-            backgroundColor: action[0].slice(0, action[1].length) === action[1] && action[1] != '/' ? 'var(--main)' :
+            backgroundColor: action[0].slice(0, action[1].length) === action[1] && action[1] != '/' ? 'white' :
               action[0] == action[1] ? 'white' : 'var(--background)',
-            color: action[0].slice(0, action[1].length) === action[1] && action[1] != '/' ? 'white' : action[0] == action[1] ? 'var(--main)' : 'var(--main)'
+            color: action[0].slice(0, action[1].length) === action[1] && action[1] != '/' ? 'white !importants' : action[0] == action[1] ? 'var(--main)' : 'var(--main)'
           },
           backgroundColor: action[0].slice(0, action[1].length) === action[1] && action[1] != '/' ? 'white' : action[0] == action[1] ? 'white' : 'transparent',
           color: action[0].slice(0, action[1].length) === action[1] && action[1] != '/' ? 'var(--main)' : action[0] == action[1] ? 'var(--main)' : 'white',

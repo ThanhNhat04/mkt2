@@ -11,13 +11,16 @@ import Box from '@mui/material/Box';
 import Image from 'next/image';
 
 export default function SideBar() {
+  
   let path = {
-    "/": "Tasks",
-    "/calendar": "Calendar",
-    "/project": "Project",
-    "/personnel": "Personnel",
-    "/progress": "Help"
+    "/": "Công việc",
+    "/calendar": "Lịch",
+    "/project": "Dự án",
+    "/personnel": "Nhân sự",
+    "/contents": "Nội dung",
+    "/progress": "Hướng dẫn"
   }
+
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
   const handleMouseEnter = () => setExpanded(true);

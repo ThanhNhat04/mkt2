@@ -702,17 +702,38 @@ export function Task_Detail({ data, projectName, taskType, startDate, endDate, c
             border: 'thin solid var(--background_1)', borderRadius: 3, background: 'white'
           }}>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Công việc:</p> {projectName}</div>
-            <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Chi tiết công việc: <span className='text_3' style={{ fontWeight: 400 }}>{data.detail} </span></p> </div>
+
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Loại công việc:</p> {taskType}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Thời gian thực hiện: </p>{startDate == endDate ? startDate : `${startDate} - ${startDate}`}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Trạng thái hoàn thành: </p>{data.doerDone ? 'Hoàn thành' : 'Chưa hoàn thành'}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Trạng thái kiểm duyệt: </p>{data.checkerDone ? 'Đã duyệt' : 'Chưa duyệt'}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Người kiểm duyệt:</p> {checkerName}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Ghi chú: </p>{data.notes}</div>
+
           </div>
         </div>
+        <p className="Title_Popup" style={{ padding: '12px 0 12px 0' }}>Chi tiết công việc</p>
+        <div style={{
+          display: 'flex', gap: 8, flexDirection: 'column', padding: 12,
+          border: 'thin solid var(--background_1)', borderRadius: 3, background: 'white'
+        }}>
+          <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Chi tiết công việc:
+            <div
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+                width: '100%',
+                overflowWrap: 'break-word',
+                padding: '10px',
+                lineHeight: '1.5'
+              }}
+            >
+              {data.detail}
+            </div>
+          </p> </div>
+        </div>
         <p className="Title_Popup" style={{ margin: '12px 0 12px 0' }}>Tài nguyên</p>
-        <Link href={`https://drive.google.com/drive/folders/${data.linkDrive}`} target='_blank'>
+        <Link href={`https://drive.google.com/drive/folders/${data.linkDrive}`} target='_blank' sx={{ mb: 12 }}>
           <div style={{
             display: 'flex', gap: 8, padding: 12,
             border: 'thin solid var(--background_1)', borderRadius: 3, background: 'white', width: 'calc(100% - 24px)'
