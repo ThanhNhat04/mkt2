@@ -22,7 +22,8 @@ export default function Tool_update({ datax, data }) {
 
   const handleSave = async (data) => {
     data.id = datax
-    const response = await fetch('/api/Tool_update', {
+    setIsLoading(true)
+    const response = await fetch('/api/tool_update', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -32,9 +33,10 @@ export default function Tool_update({ datax, data }) {
 
     const result = await response.json();
     if (result.air === 2) {
-      setOpenSnackbar(true);
+      setIsLoading(false)
       window.location.reload();
     } else {
+      setIsLoading(false)
       setOpenSnackbar(true);
     }
   };
@@ -95,7 +97,7 @@ export default function Tool_update({ datax, data }) {
 
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
         <MuiAlert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-          Không hợp lệ: Đường dẫn phải bắt đầu bằng "https://".
+          Lỗi khi cập nhập
         </MuiAlert>
       </Snackbar>
     </>
