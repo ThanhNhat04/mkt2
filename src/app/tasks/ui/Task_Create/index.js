@@ -12,8 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 
 export default function TaskCreate({ dataProject, users, dataType, token, user, projects }) {
-  
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [mesE, setMesE] = useState('');
   const [errors, setErrors] = useState({});
@@ -51,6 +50,7 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
     endDate: today,
     detail: '',
     notes: '',
+    checker: ''
   });
 
   // ==============================
@@ -77,6 +77,7 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
       endDate: today,
       detail: '',
       notes: '',
+      checker: ''
     });
     setErrors({});
     setAiError('');
@@ -130,6 +131,15 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
   //  5. Lưu (Save)
   // ==============================
   const handleSave = async () => {
+    let h;
+    for (let i in projects) {
+      if (projects[i]._id == formData.project) {
+        h = projects[i].leader[0]
+        break
+      }
+    }
+    formData.checker = h
+    
     if (!validateForm()) {
       setOpenx(true);
       return;

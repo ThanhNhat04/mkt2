@@ -67,14 +67,8 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
       doerfull = userss[i]
     }
   }
-
-  let sendname;
-  for (let i in userss) {
-    if (userss[i]._id == data.doer) {
-      sendname = userss[i]
-      break
-    }
-  }
+  console.log();
+  
 
   let userInProject = getUserByProject(userss, project, data)
   let startDate = data.startDate.split('T')[0].slice(-2) + '/' +
@@ -351,7 +345,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
 
   const sendMes = async () => {
     setIsLoading(true)
-    let url = `https://script.google.com/macros/s/AKfycbxv8i1D8o-t8IMFlSS7vjT1SK4l3CM3irghATiDXC9wTY5Pv8lNuHgJcKwrHkxIRROKmQ/exec?name=${data.name}&project=${projects}&detail=${data.detail}&doer=${doerfull.Name}&notes=${data.notes}&doerDone=${data.doerDone}&checkerDone=${data.checkerDone}&linkDrive=https://drive.google.com/drive/folders/${data.linkDrive}&phone=${doerfull.Phone}`
+    let url = `https://script.google.com/macros/s/AKfycbyfCoxZV79-6tLzGkx5mTLUruthF-TRebzZSTmB0V2w8ZgJuh3gMEGp9y6AxqJ9hyFF2Q/exec?name=${data.name}&project=${projects}&detail=${data.detail}&doer=${doerfull.Name}&notes=${data.notes}&doerDone=${data.doerDone}&checkerDone=${data.checkerDone}&linkDrive=https://drive.google.com/drive/folders/${data.linkDrive}&phone=${doerfull.Phone}`
     try {
       const response = await fetch(`${url}`);
       setIsLoading(false);
@@ -539,8 +533,9 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
       {/* Danh sách công việc con */}
       {subTask ?
         <Box sx={{ mb: 1, border: 'thin solid black' }}>
-          {data.subTask.map(t => (
+          {data.subTask.map((t, index) => (
             <Box
+              key={index}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
