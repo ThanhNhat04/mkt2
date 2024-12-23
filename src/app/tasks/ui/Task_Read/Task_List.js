@@ -61,6 +61,13 @@ export default function Task_Read_List({ student, type, dataType, dataProject, t
 }
 
 function UI_Student_List({ data, types, dataType, userss, token, user, project }) {
+  let doerfull;
+  for (let i in userss) {
+    if (userss[i]._id == data.doer) {
+      doerfull = userss[i]
+    }
+  }
+
   let sendname;
   for (let i in userss) {
     if (userss[i]._id == data.doer) {
@@ -344,7 +351,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
 
   const sendMes = async () => {
     setIsLoading(true)
-    let url = `https://script.google.com/macros/s/AKfycbx8gtYOEkSLSZf6IBEeDyg8bSnBA0FoV1VQcnUavejJL8Ue0dGf9OKbaGuOvXoSEmKTYQ/exec?name=${data.name}&project=${projects}&detail=${data.detail}&doer=${sendname.Name}&notes=${data.notes}&doerDone=${data.doerDone}&checkerDone=${data.checkerDone}&linkDrive=https://drive.google.com/drive/folders/${data.linkDrive}`
+    let url = `https://script.google.com/macros/s/AKfycbxv8i1D8o-t8IMFlSS7vjT1SK4l3CM3irghATiDXC9wTY5Pv8lNuHgJcKwrHkxIRROKmQ/exec?name=${data.name}&project=${projects}&detail=${data.detail}&doer=${doerfull.Name}&notes=${data.notes}&doerDone=${data.doerDone}&checkerDone=${data.checkerDone}&linkDrive=https://drive.google.com/drive/folders/${data.linkDrive}&phone=${doerfull.Phone}`
     try {
       const response = await fetch(`${url}`);
       setIsLoading(false);
@@ -702,14 +709,12 @@ export function Task_Detail({ data, projectName, taskType, startDate, endDate, c
             border: 'thin solid var(--background_1)', borderRadius: 3, background: 'white'
           }}>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Công việc:</p> {projectName}</div>
-
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Loại công việc:</p> {taskType}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Thời gian thực hiện: </p>{startDate == endDate ? startDate : `${startDate} - ${startDate}`}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Trạng thái hoàn thành: </p>{data.doerDone ? 'Hoàn thành' : 'Chưa hoàn thành'}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Trạng thái kiểm duyệt: </p>{data.checkerDone ? 'Đã duyệt' : 'Chưa duyệt'}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Người kiểm duyệt:</p> {checkerName}</div>
             <div style={{ display: 'flex', gap: 8 }}><p className='text_3' style={{ fontWeight: 500 }}>Ghi chú: </p>{data.notes}</div>
-
           </div>
         </div>
         <p className="Title_Popup" style={{ padding: '12px 0 12px 0' }}>Chi tiết công việc</p>
