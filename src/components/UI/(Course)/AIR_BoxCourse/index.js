@@ -12,7 +12,14 @@ export default function AIR_BoxCourse({ data, department }) {
               <p className='text_2' style={{ marginBottom: 6 }}>{data.name}</p>
               <p className='Chip' style={{ background: 'var(--bienhoa_b)', color: 'var(--bienhoa_m)', fontSize: '14px' }}>{department.name}</p>
             </div>
-            <p style={{ color: 'var(--text_400)', fontSize: '16px', fontWeight: 500 }}>{data.description}</p>
+            <p style={{
+              color: 'var(--text_400)',
+              fontSize: '16px',
+              display: '-webkit-box',
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}>{data.description}</p>
           </div>
         </div>
         <div>

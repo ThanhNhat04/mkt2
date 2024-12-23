@@ -13,12 +13,14 @@ export async function POST(request) {
     let status = 200
     await connectDB();
 
-    const leaderData = await PostProject.find({ leader: { $in: user.id } });
-    const memberData = await PostProject.find({ members: { $in: user.id } });
+    if (user.role == 'Quản lý') data = await PostProject.find({})
+    else {
+      const leaderData = await PostProject.find({ leader: { $in: user.id } });
+      const memberData = await PostProject.find({ members: { $in: user.id } });
 
-    data = data.concat(leaderData)
-    data = data.concat(memberData)
-
+      data = data.concat(leaderData)
+      data = data.concat(memberData)
+    }
     return NextResponse.json(
       { air: status === 200 ? 2 : 1, mes: message, data },
       { status }

@@ -67,9 +67,6 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
       doerfull = userss[i]
     }
   }
-  console.log();
-  
-
   let userInProject = getUserByProject(userss, project, data)
   let startDate = data.startDate.split('T')[0].slice(-2) + '/' +
     data.startDate.split('T')[0].slice(-5, -3) + '/' + data.startDate.split('T')[0].slice(0, 4)
@@ -125,12 +122,18 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
     label: item.name,
     value: item.id
   }));
-
-
-  const doers = userInProject.map(item => ({
-    label: item.Name,
-    value: item._id
-  }))
+  let doers;
+  if (!userInProject) {
+    doers = userss.map(item => ({
+      label: item.Name,
+      value: item._id
+    }))
+  } else {
+    doers = userInProject.map(item => ({
+      label: item.Name,
+      value: item._id
+    }))
+  }
 
 
   const [isLoading, setIsLoading] = useState(false);

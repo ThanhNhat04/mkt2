@@ -1,19 +1,38 @@
 export function getUserByProject(user, project, task) {
-  let g;
+  let g = null;
+
+  // Tìm project phù hợp với task.project
   for (let i in project) {
-    if (project[i]._id == task.project) g = project[i]
+    if (project[i]._id == task.project) {
+      g = project[i];
+      break;
+    }
   }
+
+  // Nếu không tìm thấy project, trả về null
+  if (!g || !g.members) {
+    return null;
+  }
+
+  // Kiểm tra nếu leader là ObjectID hoặc mảng, chuẩn hóa thành mảng
+  const leaderArray = g.leader
+    ? Array.isArray(g.leader) 
+      ? g.leader 
+      : [g.leader]
+    : []; // Nếu không có leader, đặt thành mảng rỗng
 
   const allUserIds = new Set([
     task.doer,
     task.checker,
-    ...g.leader,
+    ...leaderArray,
     ...g.members
   ]);
+
   const userMap = user.reduce((acc, user) => {
     acc[user._id] = user;
     return acc;
   }, {});
+
   return Array.from(allUserIds).map(userId => {
     const u = userMap[userId];
     if (u) {
@@ -23,6 +42,7 @@ export function getUserByProject(user, project, task) {
     }
   }).filter(Boolean);
 }
+
 
 export function setValueInpue(data, label, value) {
   return data.map(item => ({
