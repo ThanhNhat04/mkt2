@@ -15,3 +15,4 @@ export default async function CoursePage() {
     <Course_sideBar data={data} department={department} statusProject={statusProject} user={user} token={token} />
   );
 }
+ 

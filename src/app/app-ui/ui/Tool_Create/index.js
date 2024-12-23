@@ -25,7 +25,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import MuiAlert from '@mui/material/Alert';
 import { Tool_Read_all } from '@/app/data';
 
-export default function Tool_Create({ data }) {
+export default function Tool_Create({ data, user }) {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [projects, setProjects] = useState([]);
@@ -207,30 +207,30 @@ export default function Tool_Create({ data }) {
           Tổng số tool: {response ? response.length : 0}
         </Box>
 
-        {/* Nút thêm Tool */}
-        <Box sx={{ ml: 2 }}>
-          <Popup_Form
-            button={
-              <div
-                className="flexCenter"
-                style={{
-                  height: 39,
-                  background: 'var(--main)',
-                  borderRadius: 3,
-                  cursor: 'pointer',
-                  color: 'white',
-                  padding: '0 16px',
-                  gap: 8
-                }}
-              >
-                <AddBoxRoundedIcon sx={{ color: 'white', fontSize: 18 }} /> Thêm Tool
-              </div>
-            }
-            title="Tạo dự án"
-            fields={fields}
-            onSave={handleSave}
-          />
-        </Box>
+        {user.role == 'Quản lý' ?
+          <Box sx={{ ml: 2 }}>
+            <Popup_Form
+              button={
+                <div
+                  className="flexCenter"
+                  style={{
+                    height: 39,
+                    background: 'var(--main)',
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    color: 'white',
+                    padding: '0 16px',
+                    gap: 8
+                  }}
+                >
+                  <AddBoxRoundedIcon sx={{ color: 'white', fontSize: 18 }} /> Thêm Tool
+                </div>
+              }
+              title="Tạo dự án"
+              fields={fields}
+              onSave={handleSave}
+            />
+          </Box> : null}
       </Card>
 
       <Box
@@ -244,12 +244,11 @@ export default function Tool_Create({ data }) {
           return (
             <Card key={index} sx={{ maxWidth: 280, cursor: 'pointer' }}>
               {/* Nút update / delete */}
-              <Box sx={{ position: 'relative', zIndex: 1 }}>
-                <Tool_update datax={tool._id} data={tool} />
-                <DeleteButton datax={tool._id} />
-              </Box>
-
-              {/* Phần hình ảnh - link */}
+              {user.role == 'Quản lý' ?
+                <Box sx={{ position: 'relative', zIndex: 1 }}>
+                  <Tool_update datax={tool._id} data={tool} />
+                  <DeleteButton datax={tool._id} />
+                </Box> : null}
               <Link href={tool.Tool} target="_blank" rel="noopener noreferrer">
                 <div
                   style={{
