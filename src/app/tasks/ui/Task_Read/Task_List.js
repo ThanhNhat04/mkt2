@@ -45,7 +45,105 @@ export function Task_Detail({ data, projectName, taskType, startDate, endDate, c
         Công việc thuộc dự án {projectName}
       </Box>
       <Box sx={{ p: 2, bgcolor: 'var(--background)', pt: 1, maxHeight: '80vh' }}>
-        {/* Nội dung ... */}
+        <div style={{ flex: 1 }}>
+          <p className="Title_Popup" style={{ padding: '4px 0 12px 0' }}>Thông tin</p>
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              flexDirection: 'column',
+              padding: 12,
+              border: 'thin solid var(--background_1)',
+              borderRadius: 3,
+              background: 'white'
+            }}
+          >
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Công việc:</p> {projectName}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Loại công việc:</p> {taskType}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Thời gian thực hiện: </p>
+              {startDate === endDate ? startDate : `${startDate} - ${endDate}`}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Trạng thái hoàn thành:</p>
+              {data.doerDone ? 'Hoàn thành' : 'Chưa hoàn thành'}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Trạng thái kiểm duyệt:</p>
+              {data.checkerDone ? 'Đã duyệt' : 'Chưa duyệt'}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Người kiểm duyệt:</p> {checkerName}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Ghi chú:</p> {data.notes}
+            </div>
+          </div>
+        </div>
+        <p className="Title_Popup" style={{ padding: '12px 0 12px 0' }}>Chi tiết công việc</p>
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+            flexDirection: 'column',
+            padding: 12,
+            border: 'thin solid var(--background_1)',
+            borderRadius: 3,
+            background: 'white'
+          }}
+        >
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div className='text_3' style={{ fontWeight: 500 }}>
+              Chi tiết công việc:
+              <div
+                style={{
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                  width: '100%',
+                  overflowWrap: 'break-word',
+                  padding: '10px',
+                  lineHeight: '1.5'
+                }}
+              >
+                {data.detail}
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="Title_Popup" style={{ margin: '12px 0 12px 0' }}>Tài nguyên</p>
+        <Link href={`https://drive.google.com/drive/folders/${data.linkDrive}`} target='_blank' sx={{ mb: 12 }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              padding: 12,
+              border: 'thin solid var(--background_1)',
+              borderRadius: 3,
+              background: 'white',
+              width: 'calc(100% - 24px)'
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                p: 0.5,
+              }}
+            >
+              <img
+                src='https://assets.minimals.cc/public/assets/icons/apps/ic-app-drive.svg'
+                alt='drive-icon'
+                loading="lazy"
+              />
+              <Box>{projectName} - {data.name}</Box>
+            </Box>
+          </div>
+        </Link>
       </Box>
     </>
   );
@@ -61,7 +159,98 @@ export function Task_Detailsb({ data, projectName, taskType, linkdrive }) {
         Công việc thuộc dự án {projectName}
       </Box>
       <Box sx={{ p: 2, bgcolor: 'var(--background)', pt: 1, maxHeight: '80vh' }}>
-        {/* Nội dung ... */}
+        <div style={{ flex: 1 }}>
+          <p className="Title_Popup" style={{ padding: '4px 0 12px 0' }}>Thông tin</p>
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              flexDirection: 'column',
+              padding: 12,
+              border: 'thin solid var(--background_1)',
+              borderRadius: 3,
+              background: 'white'
+            }}
+          >
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Công việc:</p> {data.name}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Loại công việc:</p> {type}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Thời gian thực hiện: </p>
+              {data.startDate === data.endDate ? data.startDate : `${data.startDate} - ${data.endDate}`}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Trạng thái hoàn thành:</p>
+              {data.doerDone ? 'Hoàn thành' : 'Chưa hoàn thành'}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <p className='text_3' style={{ fontWeight: 500 }}>Ghi chú:</p> {data.notes}
+            </div>
+          </div>
+        </div>
+        <p className="Title_Popup" style={{ padding: '12px 0 12px 0' }}>Chi tiết công việc</p>
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+            flexDirection: 'column',
+            padding: 12,
+            border: 'thin solid var(--background_1)',
+            borderRadius: 3,
+            background: 'white'
+          }}
+        >
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div className='text_3' style={{ fontWeight: 500 }}>
+              Chi tiết công việc:
+              <div
+                style={{
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                  width: '100%',
+                  overflowWrap: 'break-word',
+                  padding: '10px',
+                  lineHeight: '1.5'
+                }}
+              >
+                {data.detail}
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="Title_Popup" style={{ margin: '12px 0 12px 0' }}>Tài nguyên</p>
+        <Link href={`https://drive.google.com/drive/folders/${linkdrive}`} target='_blank' sx={{ mb: 12 }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              padding: 12,
+              border: 'thin solid var(--background_1)',
+              borderRadius: 3,
+              background: 'white',
+              width: 'calc(100% - 24px)'
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                p: 0.5,
+              }}
+            >
+              <img
+                src='https://assets.minimals.cc/public/assets/icons/apps/ic-app-drive.svg'
+                alt='drive-icon'
+                loading="lazy"
+              />
+              <Box>{projectName} - {data.name}</Box>
+            </Box>
+          </div>
+        </Link>
       </Box>
     </>
   );
@@ -280,7 +469,10 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
 
   // Mở dialog với nội dung soạn sẵn
   const handleOpenSendDialog = (t) => {
+    console.log(t);
+
     let d = getFtoF(t.doer, userss, '_id')
+
     setPreparedMessage(
       `[📌 THÔNG TIN CÔNG VIỆC DỰ ÁN ${projects} 📌]
 • Công việc: ${t.name}
@@ -419,7 +611,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
               </div>
             </Tooltip>
             {/* Gửi thông báo TỨC THỜI */}
-            <Tooltip title="Gửi thông báo"  onClick={(e) => handleOpenSendDialog(data)}>
+            <Tooltip title="Gửi thông báo" onClick={(e) => handleOpenSendDialog(data)}>
               <div className={'iconWrap flexCenter'}>
                 <EmailIcon fontSize="small" />
               </div>
