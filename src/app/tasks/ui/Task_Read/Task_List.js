@@ -37,7 +37,7 @@ function abbreviateName(fullName) {
 // GIAO DIỆN CHI TIẾT CÔNG VIỆC
 export function Task_Detail({ data, projectName, taskType, startDate, endDate, checkerName }) {
   console.log(data);
-  
+
   return (
     <>
       <Box className="Title_Popup" sx={{ p: 2, borderBottom: 'thin solid var(--background_1)' }}>
@@ -150,7 +150,7 @@ export function Task_Detail({ data, projectName, taskType, startDate, endDate, c
 
 // GIAO DIỆN CHI TIẾT CÔNG VIỆC SUBTASK
 export function Task_Detailsb({ data, projectName, taskType, linkdrive }) {
-  
+
   let type = taskType;
   type.forEach((tt) => {
     if (tt._id.toLowerCase() === data.taskCategory.toLowerCase()) {
@@ -227,7 +227,7 @@ export function Task_Detailsb({ data, projectName, taskType, linkdrive }) {
           </div>
         </div>
         <p className="Title_Popup" style={{ margin: '12px 0 12px 0' }}>Tài nguyên</p>
-        <Link href={`https://drive.google.com/drive/folders/${linkdrive }`} target='_blank' sx={{ mb: 12 }}>
+        <Link href={`https://drive.google.com/drive/folders/${linkdrive}`} target='_blank' sx={{ mb: 12 }}>
           <div
             style={{
               display: 'flex',
@@ -885,12 +885,13 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Được duyệt">
-                      <IconButton
-                        size="small"
-                        onClick={() => alert('Kiểm duyệt subTask (tuỳ logic)')}
-                      >
-                        <FolderRoundedIcon fontSize="small" />
-                      </IconButton>
+                      <Link href={`https://drive.google.com/drive/folders/${data.linkDrive}`} target='_blank'>
+                        <IconButton
+                          size="small"
+                        >
+                          <FolderRoundedIcon fontSize="small" />
+                        </IconButton>
+                      </Link>
                     </Tooltip>
                     <Tooltip title="Gửi thông báo" sx={{ p: 1 }}>
                       <IconButton
