@@ -27,7 +27,7 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
   }));
   const type = dataType.map((item) => ({
     label: item.name,
-    value: item.id,
+    value: item._id,
   }));
   const person = users.map((item) => ({
     label: item.Name,
