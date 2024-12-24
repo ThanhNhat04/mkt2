@@ -24,8 +24,6 @@ export default async function Task() {
       g[2] = g[2].concat(e)
     }
   }) : dataTask = []
-  console.log(dataUser, 1);
-
   return (
     <>
       <Grid container spacing={2} sx={{ m: 0 }}>

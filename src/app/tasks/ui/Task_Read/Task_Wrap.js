@@ -16,66 +16,93 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+// Mảng trạng thái
 const Status_ = ["Đã hoàn thành", "Chưa hoàn thành", "Đã kiểm duyệt", "Chưa kiểm duyệt"];
-
 export default function Wrap_table({ dataTasks, dataProject, dataTaskType, token, user, users }) {
+  const jobCountMap = {};
+  // Duyệt qua mỗi task
+  dataTasks.forEach(task => {
+    if (task.taskCategory) {
+      if (!jobCountMap[task.taskCategory]) jobCountMap[task.taskCategory] = 0;
+      jobCountMap[task.taskCategory]++;
 
-  const TaskTypeOptions = dataTaskType.map((type) => ({ name: type.name, id: type._id }));
-  const taskCountMap = {};
+    }
+  });
 
-  dataTasks ? dataTasks.forEach(t => {
-    if (!taskCountMap[t.project]) taskCountMap[t.project] = 0;
-    taskCountMap[t.project]++;
-  }) : null
-
-  const result = dataProject.map(proj => {
+  const TaskTypeOptions = dataTaskType.map(type => {
     return {
-      name: proj.name,
-      id: proj._id,
-      leader: proj.leader,
-      tasks: taskCountMap[proj._id] || 0
+      ...type,
+      count: jobCountMap[type.id] || 0,
     };
   });
 
-  const [selectedAreas, setSelectedAreas] = useState([]);
-  const [Status, setStatus] = useState(null);
-  const [Type, setType] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
 
+  // 2) Tính số lượng task theo project
+  // ---------------------------------------------------------------------------
+  const taskCountMap = {};
+  if (dataTasks) {
+    dataTasks.forEach(t => {
+      if (!taskCountMap[t.project]) taskCountMap[t.project] = 0;
+      taskCountMap[t.project]++;
+    });
+  }
 
-  // Lọc dữ liệu
+  // Tạo mảng project + số lượng task
+  const result = dataProject.map(proj => ({
+    name: proj.name,
+    id: proj._id,
+    leader: proj.leader,
+    tasks: taskCountMap[proj._id] || 0
+  }));
+
+  // 3) Các state phục vụ lọc
+  // ---------------------------------------------------------------------------
+  const [selectedAreas, setSelectedAreas] = useState([]); // Lọc dự án
+  const [Status, setStatus] = useState(null);            // Lọc trạng thái
+  const [Type, setType] = useState(null);                // Lọc loại công việc (theo id)
+  const [searchQuery, setSearchQuery] = useState('');    // Ô tìm kiếm
+  const [startDate, setStartDate] = useState(null);      // Ngày bắt đầu
+  const [endDate, setEndDate] = useState(null);          // Ngày kết thúc
+
+  // 4) useMemo để lọc dữ liệu
+  // ---------------------------------------------------------------------------
   const filteredData = useMemo(() => {
     return dataTasks.filter((task) => {
-      // Lọc theo dự án (nếu chọn)
+      // Lọc theo dự án
       if (selectedAreas && selectedAreas.length > 0) {
         const selectedIds = selectedAreas.map(area => area.id);
         if (!selectedIds.includes(task.project)) return false;
       }
+
+      // Lọc trạng thái
       if (Status) {
         if (Status === "Chưa kiểm duyệt") {
           if (task.checkerDone) return false;
         } else if (Status === "Đã kiểm duyệt") {
           if (!task.checkerDone) return false;
         } else if (Status === "Chưa hoàn thành") {
+          // Chưa hoàn thành => doerDone false && checkerDone false
           if (task.checkerDone || task.doerDone) return false;
         } else if (Status === "Đã hoàn thành") {
+          // Đã hoàn thành => doerDone true
           if (!task.doerDone) return false;
         }
       }
 
+      // Lọc theo loại công việc
+      // (Nếu Type tồn tại => chỉ lấy task có taskCategory === Type)
       if (Type && task.taskCategory !== Type) return false;
 
-
+      // Lọc theo từ khoá search
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const taskNameMatch = task.name && task.name.toLowerCase().includes(query);
+        const taskNameMatch = task.name?.toLowerCase().includes(query);
         const projectName = dataProject.find(p => p._id === task.project)?.name?.toLowerCase() || '';
         const projectNameMatch = projectName.includes(query);
         if (!taskNameMatch && !projectNameMatch) return false;
       }
 
+      // Lọc theo ngày
       const taskStart = task.startDate ? new Date(task.startDate) : null;
       const taskEnd = task.endDate ? new Date(task.endDate) : null;
 
@@ -92,6 +119,8 @@ export default function Wrap_table({ dataTasks, dataProject, dataTaskType, token
       return true;
     });
   }, [dataTasks, selectedAreas, Status, Type, searchQuery, startDate, endDate, dataProject]);
+
+  // Nút làm mới
   const handleClearFilters = () => {
     setSelectedAreas([]);
     setStatus(null);
@@ -101,6 +130,8 @@ export default function Wrap_table({ dataTasks, dataProject, dataTaskType, token
     setEndDate(null);
   };
 
+  // 5) Giao diện
+  // ---------------------------------------------------------------------------
   return (
     <Box
       sx={{
@@ -114,78 +145,53 @@ export default function Wrap_table({ dataTasks, dataProject, dataTaskType, token
     >
       {/* Thanh trên cùng */}
       <Box sx={{ borderBottom: 'thin solid var(--background_1)' }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ borderBottom: 'thin solid var(--background_1)', p: 2 }}>
-          {/* Khu vực tìm kiếm và chọn ngày */}
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                padding: '2px 8px',
-                backgroundColor: 'white',
-                maxWidth: '300px',
-                flex: 1
-              }}
-            >
-              <SearchIcon sx={{ color: '#888', marginRight: '8px' }} />
-              <InputBase
-                placeholder="Tìm kiếm dự án hoặc công việc..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{
-                  width: '450px',
-                  p: '2px 0',
-                  fontSize: '14px',
-                  color: '#333',
-                  '&::placeholder': {
-                    color: '#aaa',
+        <div style={{
+          display: 'flex',
+          gap: 8,
+          justifyContent: 'space-between',
+          borderBottom: 'thin solid var(--background_1)',
+          padding: 8
+        }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={['DatePicker', 'DatePicker']} sx={{ p: 0, alignItems: 'center' }}>
+              <DatePicker
+                value={startDate ? dayjs(startDate) : null}
+                onChange={(newValue) => setStartDate(newValue ? newValue.toDate() : null)}
+                size="small"
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    sx: {
+                      fontSize: '12px',
+                      width: '90px',
+                      marginLeft: '6px !important'
+                    },
                   },
                 }}
               />
-            </Box>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={['DatePicker', 'DatePicker']} sx={{ p: 0, alignItems: 'center' }}>
-                <DatePicker
-                  value={startDate ? dayjs(startDate) : null}
-                  onChange={(newValue) => setStartDate(newValue ? newValue.toDate() : null)}
-                  size="small"
-                  slotProps={{
-                    textField: {
-                      size: 'small',
-                      sx: { fontSize: '14px', marginLeft: '6px !important' },
-                    },
-                  }}
-                />
-                <div style={{ height: '100%', marginLeft: '8px' }} className="flexCenter text_2">-</div>
-                <DatePicker
-                  value={endDate ? dayjs(endDate) : null}
-                  onChange={(newValue) => setEndDate(newValue ? newValue.toDate() : null)}
-                  slotProps={{
-                    textField: {
-                      size: 'small',
-                      sx: { fontSize: '14px', ml: '8px !important' },
-                    },
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </Stack>
-
-          <Stack direction="row" spacing={2}>
-            <Task_Create users={users} projects={dataProject} dataType={TaskTypeOptions} dataProject={result} token={token} user={user.id} />
-            {(selectedAreas.length > 0 || Status || Type || searchQuery || startDate || endDate) && (
-              <div onClick={handleClearFilters} className='flexCenter' style={{ height: 39, background: 'var(--main)', p: 0, borderRadius: 3, cursor: 'pointer', color: 'white', padding: '0 16px', gap: 8 }} >
-                <FindReplaceIcon />Làm mới
+              <div
+                style={{ height: '100%', marginLeft: '8px' }}
+                className="flexCenter text_2"
+              >
+                -
               </div>
-            )}
-          </Stack>
-        </Stack>
+              <DatePicker
+                value={endDate ? dayjs(endDate) : null}
+                onChange={(newValue) => setEndDate(newValue ? newValue.toDate() : null)}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    sx: {
+                      fontSize: '12px',
+                      width: '90px',
+                      marginLeft: '6px !important'
+                    },
+                  },
+                }}
+              />
+            </DemoContainer>
+          </LocalizationProvider>
 
-        {/* Khu vực các combobox lọc */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2, gap: 2 }}>
           <Autocomplete
             multiple
             disablePortal
@@ -199,6 +205,7 @@ export default function Wrap_table({ dataTasks, dataProject, dataTaskType, token
             renderInput={(params) => <TextField {...params} label="Chọn dự án" />}
           />
 
+          {/* Lọc trạng thái */}
           <Autocomplete
             disablePortal
             options={Status_}
@@ -209,43 +216,140 @@ export default function Wrap_table({ dataTasks, dataProject, dataTaskType, token
             renderInput={(params) => <TextField {...params} label="Chọn trạng thái" />}
           />
 
-          <Autocomplete
-            disablePortal
-            options={TaskTypeOptions}
-            sx={{ flex: 1 }}
-            size="small"
-            getOptionLabel={(option) => option.name}
-            value={TaskTypeOptions.find((item) => item.id === Type) || null} // Hiển thị giá trị hiện tại
-            onChange={(event, value) => setType(value ? value.id : null)} // Lấy giá trị _id khi thay đổi
-            renderInput={(params) => <TextField {...params} label="Chọn loại" />}
+          {/* Ô tìm kiếm */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              border: 'thin solid var(--background_1)',
+              borderRadius: 1,
+              padding: '2px 8px',
+              backgroundColor: 'white',
+              maxWidth: '300px',
+              flex: 1
+            }}
+          >
+            <SearchIcon sx={{ color: '#888', marginRight: '8px' }} />
+            <InputBase
+              placeholder="Tìm kiếm dự án hoặc công việc..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{
+                width: '450px',
+                p: '2px 0',
+                fontSize: '14px',
+                color: '#333',
+                '&::placeholder': {
+                  color: '#aaa',
+                },
+              }}
+            />
+          </Box>
+
+          {/* Tạo công việc mới */}
+          <Task_Create
+            users={users}
+            projects={dataProject}
+            dataType={TaskTypeOptions}     // truyền mảng loại kèm count
+            dataProject={result}
+            token={token}
+            user={user.id}
           />
+
+          {/* {(selectedAreas.length > 0 || Status || Type || searchQuery || startDate || endDate) && (
+            <div
+              onClick={handleClearFilters}
+              className='flexCenter'
+              style={{
+                height: 39,
+                background: 'var(--main)',
+                p: 0,
+                borderRadius: 3,
+                cursor: 'pointer',
+                color: 'white',
+                padding: '0 16px',
+                gap: 8
+              }}
+            >
+              <FindReplaceIcon />
+              Làm mới
+            </div>
+          )} */}
+        </div>
+
+        {/* Khu vực các nút JobTypeCard để lọc theo loại công việc */}
+        <Box sx={{ display: 'flex', justifyContent: 'start', p: .5, gap: 0.5 }}>
+          {TaskTypeOptions.map((job, index) => (
+            <JobTypeCard
+              key={index}
+              name={job.name}
+              count={job.count}
+              onClick={() => {
+                setType(prev => (prev === job.id ? null : job.id));
+              }}
+              isActive={Type === job.id}
+            />
+          ))}
         </Box>
       </Box>
 
       {/* Header bảng */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          px: 2,
-          py: 1,
-          backgroundColor: 'var(--main)',
-          height: '40px',
-          alignItems: 'center'
-        }}
-      >
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '1' }}>DỰ ÁN</Box>
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '2' }}>TÊN CÔNG VIỆC</Box>
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '1' }}>BẮT ĐẦU</Box>
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '1' }}>KẾT THÚC</Box>
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '.9' }}>LOẠI</Box>
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '1' }}>NGƯỜI KIỂM DUYỆT</Box>
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '.7', textAlign: 'center' }}>TRẠNG THÁI</Box>
-        <Box sx={{ color: 'white', fontSize: '14px', fontWeight: '500', flex: '.3', textAlign: 'center' }}>THÊM</Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', px: 1, py: .5, backgroundColor: 'var(--main)', height: '40px', alignItems: 'center' }} >
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '.7' }}>DỰ ÁN</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '1.6' }}>TÊN CÔNG VIỆC</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '1' }}>THỜI GIAN</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '.6' }}>LOẠI</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '.6' }}>THỰC HIỆN</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '.6' }}>TIẾN ĐỘ</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '.6' }}>DUYỆT</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '.7', textAlign: 'center' }}>TRẠNG THÁI</Box>
+        <Box sx={{ color: 'white', fontSize: '12px', fontWeight: '500', flex: '.3', textAlign: 'center' }}>THÊM</Box>
       </Box>
 
       {/* Danh sách task */}
-      <Task_Read_List users={users} student={filteredData} project={dataProject} type={dataTaskType} dataType={TaskTypeOptions} dataProject={result} token={token} user={user.id} />
+      <Task_Read_List
+        users={users}
+        student={filteredData}  // data đã lọc
+        project={dataProject}
+        type={dataTaskType}     // hoặc TaskTypeOptions tuỳ bạn
+        dataType={TaskTypeOptions}
+        dataProject={result}
+        token={token}
+        user={user.id}
+      />
     </Box>
   );
 }
+
+/**
+ * Component hiển thị 1 "thẻ" job type
+ * - `onClick`: hàm click vào card
+ * - `isActive`: nếu card được chọn thì highlight
+ */
+const JobTypeCard = ({ name, count, onClick, isActive }) => {
+  return (
+    <Box
+      onClick={onClick}
+      sx={{
+        border: "thin solid var(--background_1)",
+        borderRadius: "8px",
+        padding: "8px 16px",
+        display: "inline-block",
+        textAlign: "center",
+        fontWeight: "bold",
+        margin: "3px",
+        cursor: "pointer",
+        // Nếu đang active thì tô màu khác
+        backgroundColor: isActive ? "#ffe4ec" : "transparent",
+        color: isActive ? "#d81b60" : "#ff4081",
+        "&:hover": {
+          backgroundColor: "#ffe4ec",
+        },
+      }}
+    >
+      <p className="text_4_m">
+        {name}: {count}
+      </p>
+    </Box>
+  );
+};

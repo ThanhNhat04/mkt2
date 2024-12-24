@@ -10,6 +10,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function TaskCreate({ dataProject, users, dataType, token, user, projects }) {
 
@@ -35,8 +36,6 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
 
   // Lấy ngày hôm nay
   const today = getTodayDate();
-
-  // State cho 2 dialog
   const [open, setOpen] = useState(false);  // Dialog Tạo công việc
   const [openx, setOpenx] = useState(false); // Dialog Thông báo
 
@@ -139,7 +138,7 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
       }
     }
     formData.checker = h
-    
+
     if (!validateForm()) {
       setOpenx(true);
       return;
@@ -210,12 +209,12 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
 
   return (
     <>
-      {/* Nút mở dialog tạo công việc */}
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Tạo công việc
-      </Button>
-
-      {/* Dialog đầu: Tạo công việc */}
+      <div onClick={handleClickOpen} style={{
+        padding: '8px', aspectRatio: 1, height: '100%', border: 'thin solid var(--background_1)'
+        , cursor: 'pointer', borderRadius: 6
+      }}>
+        <AddIcon />
+      </div>
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <div
           className="text_2"
@@ -260,8 +259,8 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
                   value={formData.taskCategory}
                   onChange={handleChange('taskCategory')}
                 >
-                  {type.map((t) => (
-                    <MenuItem key={t.value} value={t.value}>
+                  {type.map((t, index) => (
+                    <MenuItem key={index} value={t.value}>
                       {t.label}
                     </MenuItem>
                   ))}

@@ -10,17 +10,21 @@ import ListItem from '@mui/material/ListItem';
 import Box from '@mui/material/Box';
 import Image from 'next/image';
 
-export default function SideBar() {
-  
+export default function SideBar({ data }) {
+
   let path = {
     "/": "Công việc",
     "/calendar": "Lịch",
     "/project": "Dự án",
-    "/personnel": "Nhân sự",
+    // "/personnel": "Nhân sự",
     "/contents": "Nội dung",
     "/app-ui": "Công cụ",
-    "/progress": "Hướng dẫn"
+
   }
+
+  if (data.Role == 'Quản lý') path['/personnel'] = "Nhân sự"
+  path["/progress"] = "Hướng dẫn"
+
 
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();

@@ -63,3 +63,11 @@ export function getFtoF(ids, users, atr) {
   const idArray = Array.isArray(ids) ? ids : [ids];
   return users.filter(user => idArray.includes(user[`${atr}`]));
 }
+
+// utils/abbreviateName.js
+export default function abbreviateName(fullName) {
+  const nameParts = fullName.trim().split(/\s+/); // Tách trên nhiều khoảng trắng
+  const lastName = nameParts.pop();               // Lấy tên cuối
+  const initials = nameParts.map(part => part[0].toUpperCase()).join(".");
+  return `${initials}.${lastName}`;
+}

@@ -43,8 +43,8 @@ export default async function RootLayout({ children }) {
                 <Box
                   sx={{
                     height: 'calc(100% - 40px)',
-                    width: 'calc(100% - 64px)',
-                    padding: '32px 32px 8px 32px',
+                    width: 'calc(100% - 32px)',
+                    padding: '16px 16px 8px 16px',
                     overflow: 'hidden',
                     overflowY: 'auto',
                     '&::-webkit-scrollbar': { width: '0' },
