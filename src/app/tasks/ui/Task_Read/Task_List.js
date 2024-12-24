@@ -539,6 +539,83 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
 
   // (Các hàm khác: checkDone, checkerDone, deleteTask, handleSave, handleSave_t, v.v...)
 
+  // TẠO CÔNG VIỆC CON
+  const handleSave_t = async (datas) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/Task_create_clone`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          taskId: data._id,
+          subTask: datas,
+          source: 1,
+        }),
+      });
+      setIsLoading(false);
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
+    }
+  };
+
+  const checkerDone = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`https://todo.tr1nh.net/api/task/${data._id}/checker-done`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsLoading(false);
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
+    }
+  };
+
+  // XÓA CÔNG VIỆC
+  const deleteTask = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`https://todo.tr1nh.net/api/task/${data._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsLoading(false);
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
+    }
+  };
+
+
   // ================== RETURN JSX ==================
   return (
     <>
@@ -608,7 +685,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
           }}
         >
           <Box sx={{ flex: 0.7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Tooltip title="Được duyệt" onClick={() => {/* call checkerDone */ }}>
+            <Tooltip title="Được duyệt" onClick={() => { checkerDone }}>
               <div className={data.checkerDone ? 'iconWrap2 flexCenter' : 'iconWrap flexCenter'}>
                 <LibraryAddCheckRoundedIcon fontSize="small" sx={{ color: data.checkerDone ? 'green' : 'unset' }} />
               </div>
@@ -712,13 +789,13 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
               }
               title="Tạo công việc con"
               fields={create_t}
-              onSave={() => {/* handleSave_t */ }}
+              onSave={handleSave_t}
             />
 
             <Divider />
 
             {/* Xóa */}
-            <MenuItem onClick={() => {/* deleteTask */ }} sx={{ color: '#b01b1b' }}>
+            <MenuItem onClick={deleteTask} sx={{ color: '#b01b1b' }}>
               <ListItemIcon>
                 <DeleteRoundedIcon sx={{ color: '#b01b1b' }} fontSize="small" />
               </ListItemIcon>
@@ -884,7 +961,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
                       onSave={(data) => console.log('Save subTask', data)}
                     />
                     <Divider />
-                    <MenuItem onClick={() => {/* deleteTask */ }} sx={{ color: '#b01b1b' }}>
+                    <MenuItem onClick={deleteTask} sx={{ color: '#b01b1b' }}>
                       <ListItemIcon>
                         <DeleteRoundedIcon sx={{ color: '#b01b1b' }} fontSize="small" />
                       </ListItemIcon>
