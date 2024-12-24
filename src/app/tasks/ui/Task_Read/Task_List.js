@@ -151,6 +151,13 @@ export function Task_Detail({ data, projectName, taskType, startDate, endDate, c
 
 // GIAO DIỆN CHI TIẾT CÔNG VIỆC SUBTASK
 export function Task_Detailsb({ data, projectName, taskType, linkdrive }) {
+  let type = taskType;
+  type.forEach((tt) => {
+    if (tt._id.toLowerCase() === data.taskCategory.toLowerCase()) {
+      type = tt.name;
+    }
+  });
+
   // ... (giữ nguyên logic cũ)
   // Lược bớt chi tiết để code gọn
   return (
@@ -326,7 +333,10 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
 
   // Dialog xem chi tiết cha
   const [detail, setDetail] = useState(false);
-  const openDetail = () => setDetail(true);
+  const openDetail = () => {
+    setAnchorEl(null)
+    setDetail(true);
+  }
   const detailClose = () => setDetail(false);
 
   // Dialog xem chi tiết subtask
@@ -469,8 +479,6 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
 
   // Mở dialog với nội dung soạn sẵn
   const handleOpenSendDialog = (t) => {
-    console.log(t);
-
     let d = getFtoF(t.doer, userss, '_id')
 
     setPreparedMessage(
@@ -606,11 +614,12 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
               </div>
             </Tooltip>
             <Tooltip title="Drive">
-              <div className={data.checkerDone ? 'iconWrap2 flexCenter' : 'iconWrap flexCenter'}>
-                <FolderRoundedIcon fontSize="small" />
-              </div>
+              <Link href={`https://drive.google.com/drive/folders/${data.linkDrive}`} target="_blank">
+                <IconButton size="small">
+                  <FolderRoundedIcon fontSize="small" />
+                </IconButton>
+              </Link>
             </Tooltip>
-            {/* Gửi thông báo TỨC THỜI */}
             <Tooltip title="Gửi thông báo" onClick={(e) => handleOpenSendDialog(data)}>
               <div className={'iconWrap flexCenter'}>
                 <EmailIcon fontSize="small" />
