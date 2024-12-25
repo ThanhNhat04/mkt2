@@ -26,6 +26,7 @@ export async function POST(request) {
     }
 
     const ID = new mongoose.Types.ObjectId();
+    subTask.taskCategory = new ObjectId(subTask.taskCategory)
     subTask.doer = new ObjectId(subTask.doer)
     subTask._id = ID
     subTask.done = false
