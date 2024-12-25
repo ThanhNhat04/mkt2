@@ -265,11 +265,24 @@ export function Task_Detailsb({ data, projectName, taskType, linkdrive }) {
 }
 
 function UI_Student_List({ data, types, dataType, userss, token, user, project }) {
-
-
+  let tr = 0
+  let al = 0
+  let pe = 0
   data.subTask.forEach(t => {
-    console.log(t.done)
+    if (t.done) {
+      tr++
+    }
+    al++
   })
+  if (al == 0) {
+    pe = 0 + '%'
+  }
+  else {
+    pe = tr / al * 100 + '%'
+  }
+  console.log(pe);
+
+
   // Lấy doer, userInProject, v.v...
   let doerfull;
   for (let i in userss) {
@@ -685,11 +698,11 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
           borderTop: '1px solid',
           borderColor: 'var(--background_1)',
           textDecoration: 'none',
-          backgroundColor: data.checkerDone ? '#d2ffd2' : 'unset',
+          backgroundColor: pe == 100 + '%' ? '#d2ffd2' : 'unset',
           transition: 'all .2s linear',
           cursor: 'pointer',
           '&:hover': {
-            backgroundColor: data.checkerDone ? '#b2efb2' : 'var(--background)',
+            backgroundColor: pe == 100 + '%' ? '#b2efb2' : 'var(--background)',
           },
         }}
       >
@@ -721,7 +734,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
           </Box>
 
           <Box sx={{ flex: '.6', display: 'flex', alignItems: 'center', color: 'var(--text)' }}>
-          
+            <p style={{ fontSize: 14 }}> {pe}</p>
           </Box>
 
           <Box sx={{ flex: '.6', display: 'flex', alignItems: 'center', color: 'var(--text)' }}>
