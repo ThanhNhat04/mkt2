@@ -1,20 +1,14 @@
+import { Project_Read_all, Task_Read_all } from '@/app/data'
 import Calendar_Wrap from './ui/Calendar_Read/Calendar_Wrap';
 
 export default async function Page() {
-  const events = [
-    { date: '2024-12-12', title: 'Lau nhà', color: '#a2a2ff', project: 'Việc Nhà' },
-    { date: '2024-12-18', title: 'Làm bài tập', color: '#ffe7a2', project: 'Học Tập' },
-    { date: '2024-12-18', title: 'Chơi game', color: '#ffe7a2', project: 'Học Tập' },
-    { date: '2024-12-22', title: 'Soạn bài mới', color: '#ffe7a2', project: 'Học Tập' },
-    { date: '2024-12-20', title: "Rửa bát", color: '#a2a2ff', project: 'Việc Nhà' },
-    { date: '2024-12-20', title: 'Soạn văn', color: '#ffe7a2', project: 'Học Tập' },
-  ];
-
-  const project = Array.from(new Set(events.map((item) => item.project)));
+  let datatasks = await Task_Read_all()
+  let dataproject = await Project_Read_all()
+  let projectname = Array.from(new Set(dataproject.map((item) => item.name)));
 
   return (
     <div style={{ display: 'flex', height: '100%', borderRadius: 8, boxShadow: 'var(--box)', background: 'white' }}>
-      <Calendar_Wrap initialYear={2024} initialMonth={12} events={events} project={project} />
+      <Calendar_Wrap initialYear={2024} initialMonth={12} events={dataproject} project={projectname} task={datatasks} />
     </div>
   );
 }

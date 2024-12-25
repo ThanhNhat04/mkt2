@@ -14,10 +14,10 @@ function generateCalendarDays(year, month) {
   return days;
 }
 
-export default function Calendar_Project({ year, month, filters, onFilterChange, events }) {
+export default function Calendar_Project({ year, month, filters, onFilterChange, events, task }) {
   const days = generateCalendarDays(year, month);
   const project = Array.from(
-    new Map(events.map((item) => [item.project, item])).values()
+    new Map(events.map((item) => [item.name, item])).values()
   );
 
   return (
@@ -46,14 +46,14 @@ export default function Calendar_Project({ year, month, filters, onFilterChange,
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
         <label style={{ display: 'flex', gap: 8 }} className="custom-checkbox">
           <input type="checkbox" checked={filters.viewAll} onChange={(e) => onFilterChange('viewAll', e.target.checked)} />
-          <span className="checkmark" style={{ borderColor: '#4caf50', backgroundColor: '#4caf50' }}></span>
+          <span className="checkmark" style={{ borderColor: `var(--main)`, backgroundColor: `var(--main)` }}></span>
           <p className="text_4_m">Tất cả</p>
         </label>
         {project.map((t, index) => (
           <label key={index} style={{ display: 'flex', gap: 8 }} className="custom-checkbox">
-            <input type="checkbox" checked={filters[`${t.project}`]} onChange={(e) => onFilterChange(`${t.project}`, e.target.checked)} />
-            <span className="checkmark" style={{ borderColor: `${t.color}`, backgroundColor: `${t.color}` }}></span>
-            <p className="text_4_m">{t.project}</p>
+            <input type="checkbox" checked={filters[`${t.name}`]} onChange={(e) => onFilterChange(`${t.name}`, e.target.checked)} />
+            <span className="checkmark" style={{ borderColor: `var(--main)`, backgroundColor: `var(--main)` }}></span>
+            <p className="text_4_m">{t.name}</p>
           </label>
         ))
         }
@@ -61,3 +61,5 @@ export default function Calendar_Project({ year, month, filters, onFilterChange,
     </div>
   );
 }
+
+// style={{ borderColor: `${t.color}`, backgroundColor: `${t.color}` }}

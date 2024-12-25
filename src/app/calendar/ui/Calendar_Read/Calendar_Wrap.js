@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Calendar_Project from './Calendar_Project';
 import Calendar_Main from './Calendar_Main';
 
-export default function Calendar_Wrap({ initialYear, initialMonth, events, project }) {
+export default function Calendar_Wrap({ initialYear, initialMonth, events, project, task }) {
   const [year, setYear] = useState(initialYear);
   const [month, setMonth] = useState(initialMonth);
 
@@ -14,6 +14,8 @@ export default function Calendar_Wrap({ initialYear, initialMonth, events, proje
   });
 
   const handleFilterChange = (filterName, value) => {
+    console.log(filterName);
+
     setFilters((prev) => {
       if (filterName === 'viewAll') {
         const updatedFilters = { viewAll: value };
@@ -47,9 +49,9 @@ export default function Calendar_Wrap({ initialYear, initialMonth, events, proje
         <Calendar_Main
           year={year}
           month={month}
-          events={events}
           filters={filters}
-          project={project}
+          project={events}
+          task={task}
           onPrevMonth={() => {
             let newMonth = month - 1;
             let newYear = year;
