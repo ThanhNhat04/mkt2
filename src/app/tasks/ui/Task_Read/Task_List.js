@@ -918,7 +918,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
                       <p style={{ fontSize: 14 }}>{abbreviateName(doerss[0].Name)}</p>
                     </Box>
                     <Box sx={{ flex: '.5', display: 'flex', alignItems: 'center', color: 'var(--text)' }}>
-
+                      <p style={{ fontSize: 14 }}>{t.done ? 'Đã hoàn thành' : 'Chưa hoàn thành'}</p>
                     </Box>
                     <Box sx={{ flex: '.5', display: 'flex', alignItems: 'center', color: 'var(--text)' }}>
                       <p style={{ fontSize: 14 }}>{abbreviateName(users)}</p>
