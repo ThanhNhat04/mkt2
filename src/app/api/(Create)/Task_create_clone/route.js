@@ -3,6 +3,7 @@ import PostTask from "@/models/postTask"
 import { authenticate } from '@/utils/authenticate'
 import { NextResponse } from 'next/server'
 import mongoose from 'mongoose';
+const { ObjectId } = mongoose.Types;
 
 export const preferredRegion = process.env.area
 
@@ -25,6 +26,7 @@ export async function POST(request) {
     }
 
     const ID = new mongoose.Types.ObjectId();
+    subTask.doer = new ObjectId(subTask.doer)
     subTask._id = ID
     subTask.done = false
 

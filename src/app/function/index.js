@@ -16,8 +16,8 @@ export function getUserByProject(user, project, task) {
 
   // Kiểm tra nếu leader là ObjectID hoặc mảng, chuẩn hóa thành mảng
   const leaderArray = g.leader
-    ? Array.isArray(g.leader) 
-      ? g.leader 
+    ? Array.isArray(g.leader)
+      ? g.leader
       : [g.leader]
     : []; // Nếu không có leader, đặt thành mảng rỗng
 
@@ -65,9 +65,23 @@ export function getFtoF(ids, users, atr) {
 }
 
 // utils/abbreviateName.js
-export default function abbreviateName(fullName) {
+export function abbreviateName(fullName) {
   const nameParts = fullName.trim().split(/\s+/); // Tách trên nhiều khoảng trắng
   const lastName = nameParts.pop();               // Lấy tên cuối
   const initials = nameParts.map(part => part[0].toUpperCase()).join(".");
   return `${initials}.${lastName}`;
+}
+
+
+export function formatDateToDDMMYYYY(inputDate) {
+  // Tạo đối tượng Date từ input
+  const date = new Date(inputDate);
+
+  // Lấy ngày, tháng, năm
+  const day = date.getDate().toString().padStart(2, '0');          // Lấy ngày (1-31) và thêm '0' nếu 1 chữ số
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Lấy tháng (0-11) nên +1, và thêm '0' nếu 1 chữ số
+  const year = date.getFullYear();                                 // Lấy năm
+
+  // Kết hợp theo format DD/MM/YYYY
+  return `${day}/${month}/${year}`;
 }
