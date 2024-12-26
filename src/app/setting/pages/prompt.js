@@ -9,10 +9,14 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import Popup_Form from '@/utils/Extensions_UI/Popup_Form';
-import { DeleteBtnSetting } from './ui/btn';
 
-export function Prompt() {
+export function Prompt({ dbprompt }) {
 
+  dbprompt = dbprompt.map((item) => ({
+    label: item.name,
+    value: item._id
+  }))
+  console.log(dbprompt);
   const fields = [
     {
       type: 'input',
@@ -29,12 +33,8 @@ export function Prompt() {
       type: 'select',
       name: 'tag',
       label: 'tag',
-      options: [
-        { value: 'AI Writing', label: 'AI Writing' },
-        { value: 'Content', label: 'Content' },
-        { value: 'Translation', label: 'Translation' },
-        { value: 'Other', label: 'Other' }
-      ]
+      options: dbprompt,
+      required: true
     },
   ];
 
@@ -76,30 +76,34 @@ export function Prompt() {
     }
   };
 
-  const PromptItem = ({ prompt }) => (
-    <Box
-      onClick={() => setSelectedPrompt(prompt)}
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        p: 2,
-        borderBottom: '1px solid #eee',
-        cursor: 'pointer'
-      }}
-    >
-      <Avatar sx={{ mr: 2 }}>{prompt.name}</Avatar>
-      <Box>
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{prompt.name}</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Tag: {prompt.tag}
-        </Typography>
+  const PromptItem = ({ prompt }) => {
+    const tagLabel = dbprompt.find(option => option.value === prompt.tag)?.label || prompt.tag;
+
+    return (
+      <Box
+        onClick={() => setSelectedPrompt(prompt)}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          p: 2,
+          borderBottom: '1px solid #eee',
+          cursor: 'pointer'
+        }}
+      >
+        <Avatar sx={{ mr: 2 }}>{prompt.name}</Avatar>
+        <Box>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{prompt.name}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Tag: {tagLabel}
+          </Typography>
+        </Box>
+        <Box sx={{
+          position: 'relative', zIndex: 1, display: 'flex', gap: 1, marginLeft: 'auto', alignItems: 'center'
+        }}>
+        </Box>
       </Box>
-      <Box sx={{
-        position: 'relative', zIndex: 1, display: 'flex', gap: 1, marginLeft: 'auto', alignItems: 'center'
-      }}>
-      </Box>
-    </Box>
-  );
+    );
+  };
 
   const SearchBar = () => (
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -151,35 +155,66 @@ export function Prompt() {
     if (!selectedPrompt) return;
 
     try {
-        const response = await fetch('/api/prompt_update', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: selectedPrompt._id,
-                name: promptName,
-                prompt: promptDescription,
-                tag: selectedTag
-            })
-        });
+      const response = await fetch('/api/prompt_update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: selectedPrompt._id,
+          name: promptName,
+          prompt: promptDescription,
+          tag: selectedTag
+        })
+      });
 
-        if (!response.ok) {
-            throw new Error('Failed to update prompt');
-        }
+      if (!response.ok) {
+        throw new Error('Failed to update prompt');
+      }
 
-        const result = await response.json();
-        if (result.air === 2) {
-            const updatedPrompts = prompts.map(prompt =>
-                prompt._id === selectedPrompt._id ? result.data : prompt
-            );
-            setPrompts(updatedPrompts);
-            setSelectedPrompt(null);
-        } else {
-            throw new Error(result.mes || 'Failed to update prompt');
-        }
+      const result = await response.json();
+      if (result.air === 2) {
+        const updatedPrompts = prompts.map(prompt =>
+          prompt._id === selectedPrompt._id ? result.data : prompt
+        );
+        setPrompts(updatedPrompts);
+        setSelectedPrompt(null);
+      } else {
+        throw new Error(result.mes || 'Failed to update prompt');
+      }
     } catch (error) {
-        console.error('Failed to update prompt:', error);
+      console.error('Failed to update prompt:', error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedPrompt) return;
+
+    try {
+      const response = await fetch('/api/prompt_delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: selectedPrompt._id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete prompt');
+      }
+
+      const result = await response.json();
+      if (result.air === 2) {
+        const updatedPrompts = prompts.filter(prompt => prompt._id !== selectedPrompt._id);
+        setPrompts(updatedPrompts);
+        setSelectedPrompt(null);
+      } else {
+        throw new Error(result.mes || 'Failed to delete prompt');
+      }
+    } catch (error) {
+      console.error('Failed to delete prompt:', error);
     }
   };
 
@@ -194,7 +229,7 @@ export function Prompt() {
       setSelectedTag('');
     }
   }, [selectedPrompt]);  // Updated useEffect to fetch existing prompts
-  
+
   React.useEffect(() => {
     const fetchPrompts = async () => {
       try {
@@ -208,7 +243,7 @@ export function Prompt() {
           throw new Error('Failed to fetch prompts');
         }
         const result = await response.json();
-        if (result.air === 2) { 
+        if (result.air === 2) {
           const sortedPrompts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setPrompts(sortedPrompts);
         } else {
@@ -264,7 +299,8 @@ export function Prompt() {
                   border: '1px solid #ddd',
                   borderRadius: '4px',
                   marginBottom: '10px',
-                  fontSize: '16px'
+                  fontSize: '16px',
+                  backgroundColor: '#f0f0f0'
                 }}
               />
               <select
@@ -276,7 +312,8 @@ export function Prompt() {
                   border: '1px solid #ddd',
                   borderRadius: '4px',
                   marginBottom: '10px',
-                  fontSize: '16px'
+                  fontSize: '16px',
+                  backgroundColor: '#f0f0f0'
                 }}
               >
                 <option value="">Chọn tag</option>
@@ -298,21 +335,31 @@ export function Prompt() {
                   marginBottom: '10px',
                   minHeight: '360px',
                   resize: 'vertical',
-                  fontSize: '16px'
+                  fontSize: '16px',
+                  backgroundColor: '#f0f0f0'
                 }}
               />
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, justifyContent: 'center' }}>
                 <Button
                   variant="contained"
                   onClick={handleUpdate}
-                disabled={!selectedPrompt}
-                sx={{
-                  backgroundColor: '#primary.main', color: 'white', padding: '12px', '&:hover': { backgroundColor: 'primary.dark' }, width: '20%'
-                }}
-              >
-                Cập nhập
+                  disabled={!selectedPrompt}
+                  sx={{
+                    backgroundColor: '#primary.main', color: 'white', padding: '12px', '&:hover': { backgroundColor: 'primary.dark' }, width: '20%'
+                  }}
+                >
+                  Cập nhập
                 </Button>
-                <DeleteBtnSetting data={selectedPrompt?._id} />
+                <Button
+                  variant="contained"
+                  onClick={handleDelete}
+                  disabled={!selectedPrompt}
+                  sx={{
+                    backgroundColor: 'red', color: 'white', padding: '12px', '&:hover': { backgroundColor: 'darkred' }, width: '20%'
+                  }}
+                >
+                  Xóa
+                </Button>
               </Box>
             </Box>
           </Box>
