@@ -12,7 +12,7 @@ import Card from '@mui/material/Card';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import { Prompt } from './pages/prompt';
-import { Foundation } from './pages/foundation';
+import { Foundation } from './pages/Foundation';
 import { Group } from './pages/gro';
 export default function Main({ }) {
   const [value, setValue] = React.useState('1');

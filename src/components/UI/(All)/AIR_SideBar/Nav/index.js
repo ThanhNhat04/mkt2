@@ -9,6 +9,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 import SourceIcon from '@mui/icons-material/Source';
 import ExtensionIcon from '@mui/icons-material/Extension';
+import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 
 export default function Nav({ expanded, text, action }) {
   let icon = ''
@@ -50,6 +51,12 @@ export default function Nav({ expanded, text, action }) {
     }} />)
   } else if (action[1] == '/contents') {
     icon = (<SourceIcon sx={{
+      height: '25px',
+      color: 'inherit',
+      transition: 'all .3s ease-out'
+    }} />)
+  } else if(action[1] =='/setting'){
+    icon = (<SettingsApplicationsIcon sx={{
       height: '25px',
       color: 'inherit',
       transition: 'all .3s ease-out'

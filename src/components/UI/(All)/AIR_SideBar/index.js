@@ -10,6 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import Box from '@mui/material/Box';
 import Image from 'next/image';
 
+
 export default function SideBar({ data }) {
 
   let path = {
@@ -24,7 +25,7 @@ export default function SideBar({ data }) {
 
   if (data.Role == 'Quản lý') path['/personnel'] = "Nhân sự"
   path["/progress"] = "Hướng dẫn"
-
+  path["/setting"] = "Cài đặt"
 
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
