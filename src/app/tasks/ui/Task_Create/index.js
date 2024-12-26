@@ -163,15 +163,13 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
         let id = await response.json()
         id = id.data._id
         if (selectedF.length > 0) {
-          console.log(selectedF);
-
           await fetchApi('/task_create', {
             method: 'POST',
             body: JSON.stringify({ _id: id, foundation: selectedF })
           })
         }
         handleClose();
-        // window.location.reload();
+        window.location.reload();
       } else {
         setMesE('Tạo công việc không thành công!');
         setOpenx(true);
