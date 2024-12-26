@@ -574,28 +574,28 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project, 
   const handleSave = async (datas) => {
     console.log(datas);
 
-    // setIsLoading(true)
-    // try {
-    //   const response = await fetch(`https://todo.tr1nh.net/api/task/${data._id}`, {
-    //     method: 'PUT',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify(datas),
-    //   });
-    //   if (response.ok) {
-    //     window.location.reload();
-    //     setIsLoading(false);
-    //   } else {
-    //     const errorData = await response.json();
-    //     alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
-    //     setIsLoading(false);
-    //   }
-    // } catch (error) {
-    //   alert(`Đã xảy ra lỗi: ${error.message}`);
-    //   setIsLoading(false);
-    // }
+    setIsLoading(true)
+    try {
+      const response = await fetch(`https://todo.tr1nh.net/api/task/${data._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(datas),
+      });
+      if (response.ok) {
+        window.location.reload();
+        setIsLoading(false);
+      } else {
+        const errorData = await response.json();
+        alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      alert(`Đã xảy ra lỗi: ${error.message}`);
+      setIsLoading(false);
+    }
   };
 
 
