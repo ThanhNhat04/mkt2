@@ -13,7 +13,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import { Prompt } from './pages/prompt';
 import { Foundation } from './pages/foundation';
-import { Group } from './pages/gro';
+import { Group } from './pages/group';
 export default function Main({ }) {
   const [value, setValue] = React.useState('1');
   const handleChange = (event, newValue) => {

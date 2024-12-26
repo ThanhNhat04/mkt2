@@ -76,3 +76,14 @@ export async function Project_Read_One(id) {
   }
   return data
 }
+
+
+export async function Prompt_Read_all() {
+  let data
+  try {
+    data = await fetchApi('/get_prompt', { method: 'POST', body: { source: 1 } });
+  } catch (error) {
+    data = null
+  }
+  return data
+}
