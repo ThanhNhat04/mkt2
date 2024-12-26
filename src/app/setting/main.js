@@ -13,15 +13,15 @@ import { Prompt } from './pages/prompt';
 import { Foundation } from './pages/Foundation';
 import { Group } from './pages/gro';
 
-export default function Main({ fount }) {
+export default function Main({ fount, dbprompt }) {
   const [value, setValue] = React.useState('1');
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }} >
-      <Card sx={{ position: 'sticky', top: 0, boxShadow: ' rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;', }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: 'calc(100vh - 40px)' }} >
+      <Card sx={{ boxShadow: ' rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;', height: 'max-content', overflow: 'unset' }}>
         <div style={{ padding: '16.4px 16px', display: 'flex', gap: 12, alignItems: 'center' }}>
           <SettingsIcon sx={{ color: 'var(--main)' }} />
           <p className='text_2'>CÀI ĐẶT</p>
@@ -45,7 +45,7 @@ export default function Main({ fount }) {
         </BottomNavigation>
       </Card>
       <div style={{ flex: 1 }} >
-        {value == 1 ? <Prompt /> : value == 2 ? <Group /> : <Foundation data={fount} />}
+        {value == 1 ? <Prompt dbprompt={dbprompt} /> : value == 2 ? <Group /> : <Foundation data={fount} />}
       </div>
     </Box>
   )
