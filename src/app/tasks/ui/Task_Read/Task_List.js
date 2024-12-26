@@ -266,7 +266,7 @@ export function Task_Detailsb({ data, projectName, taskType, linkdrive }) {
   );
 }
 
-function UI_Student_List({ data, types, dataType, userss, token, user, project }) {
+function UI_Student_List({ data, types, dataType, userss, token, user, project, dataFound }) {
 
   const uniqueTypes = [...new Set(data.foundation.map((item) => item.type))];
 
@@ -386,6 +386,15 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
     label: item.name,
     value: item._id,
   }));
+  const foundup = data.foundation.map((item) => (item));
+  const maxfoind = dataFound.map((item) => ({
+    label: item.name,
+    value: item,
+  }));
+  console.log(foundup);
+  console.log(maxfoind);
+
+
   let doers;
   if (!userInProject) {
     doers = userss.map((item) => ({
@@ -398,6 +407,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
       value: item._id,
     }));
   }
+
   let typeUpdate = typess.find((e) => e.label === type);
 
   const fields = [
@@ -416,6 +426,15 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
       defaultValue: typeUpdate?.value || '',
       options: typess,
     },
+    // {
+    //   type: 'multi-select',
+    //   name: 'foundation',
+    //   label: 'Chọn nền tảng',
+    //   options: maxfoind,
+    //   required: true,
+    //   defaultValue: foundup,
+    // },
+
     {
       type: 'select',
       name: 'doer',
@@ -553,28 +572,30 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
   };
 
   const handleSave = async (datas) => {
-    setIsLoading(true)
-    try {
-      const response = await fetch(`https://todo.tr1nh.net/api/task/${data._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(datas),
-      });
-      if (response.ok) {
-        window.location.reload();
-        setIsLoading(false);
-      } else {
-        const errorData = await response.json();
-        alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      alert(`Đã xảy ra lỗi: ${error.message}`);
-      setIsLoading(false);
-    }
+    console.log(datas);
+
+    // setIsLoading(true)
+    // try {
+    //   const response = await fetch(`https://todo.tr1nh.net/api/task/${data._id}`, {
+    //     method: 'PUT',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify(datas),
+    //   });
+    //   if (response.ok) {
+    //     window.location.reload();
+    //     setIsLoading(false);
+    //   } else {
+    //     const errorData = await response.json();
+    //     alert(`Đã xảy ra lỗi: ${errorData.mes || errorData.message || 'Không xác định'}`);
+    //     setIsLoading(false);
+    //   }
+    // } catch (error) {
+    //   alert(`Đã xảy ra lỗi: ${error.message}`);
+    //   setIsLoading(false);
+    // }
   };
 
 
@@ -1142,7 +1163,8 @@ export default function Task_Read_List({
   token,
   user,
   project,
-  users
+  users,
+  dataFound
 }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -1173,6 +1195,7 @@ export default function Task_Read_List({
           dataProject={dataProject}
           token={token}
           user={user}
+          dataFound={dataFound}
         />
       ))}
       <Box

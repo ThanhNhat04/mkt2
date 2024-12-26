@@ -438,6 +438,7 @@ export default function Wrap_table({
         dataProject={result}
         token={token}
         user={user.id}
+        dataFound={dataFound}
       />
     </Box>
   );

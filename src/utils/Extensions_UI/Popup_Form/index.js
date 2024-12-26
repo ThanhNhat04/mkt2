@@ -13,6 +13,7 @@ import Checkbox from '@mui/material/Checkbox';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import CircularProgress from '@mui/material/CircularProgress';
+import Autocomplete from '@mui/material/Autocomplete';
 import PropTypes from 'prop-types';
 
 export default function Popup_Form({ button, title, fields, onSave, isLoading = false }) {
@@ -20,7 +21,7 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
-  // Khởi tạo formData với defaultValue khi component mount hoặc fields thay đổi
+  // Initialize formData with defaultValue when component mounts or fields change
   useEffect(() => {
     const initialData = {};
     fields.forEach(field => {
@@ -42,11 +43,11 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
   const handleOpen = () => setOpen(true);
   const handleClose = () => !isLoading && setOpen(false);
 
-  // Xử lý khi lưu
+  // Handle save
   const handleSave = () => {
     const newErrors = {};
 
-    fields.forEach((field) => {
+    fields.forEach(field => {
       if (field.required) {
         const value = formData[field.name];
         if (
@@ -62,23 +63,22 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      return; // Không thực hiện lưu nếu có lỗi
+      return;
     }
 
-    // Nếu không có lỗi, gọi hàm onSave và đóng popup
     if (onSave) onSave(formData);
     setOpen(false);
   };
 
-  // Xử lý thay đổi input
+  // Handle input change
   const handleInputChange = (name, value) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
 
     if (errors[name]) {
-      setErrors((prev) => {
+      setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -86,9 +86,9 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
     }
   };
 
-  // Xử lý thay đổi checkbox
+  // Handle checkbox change
   const handleCheckboxChange = (groupName, optionValue, isChecked) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [groupName]: {
         ...prev[groupName],
@@ -97,7 +97,7 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
     }));
 
     if (errors[groupName]) {
-      setErrors((prev) => {
+      setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[groupName];
         return newErrors;
@@ -119,7 +119,9 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
         sx={{ maxHeight: '100vh' }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <Box className="Title_Popup" sx={{ p: 2, borderBottom: 'thin solid var(--background_1)' }}>{title}</Box>
+          <Box className="Title_Popup" sx={{ p: 2, borderBottom: 'thin solid var(--background_1)' }}>
+            {title}
+          </Box>
           <Box sx={{ flex: 1, overflow: 'hidden', overflowY: 'auto', p: 2 }} className="Wrap_Scroll">
             {isLoading ? (
               <Box
@@ -134,27 +136,56 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
               </Box>
             ) : (
               fields.map((field, index) => {
-                // Kiểm tra điều kiện hiển thị
+                // Conditional rendering
                 if (field.conditional) {
                   const dependentValue = field.conditional.dependsOn
                     .split('.')
-                    .reduce((acc, key) => acc?.[key], formData); // Truy cập giá trị phụ thuộc trong formData
+                    .reduce((acc, key) => acc?.[key], formData);
                   if (dependentValue !== field.conditional.value) {
-                    return null; // Không hiển thị nếu điều kiện không khớp
+                    return null;
                   }
+                }
+
+                if (field.type === 'multi-select') {
+                  return (
+                    <Autocomplete
+                      size="small"
+                      key={index}
+                      multiple
+                      options={field.options}
+                      value={formData[field.name]?.map(value => 
+                        field.options.find(option => option.value === value)
+                      ) || []}
+                      onChange={(e, selectedOptions) =>
+                        handleInputChange(
+                          field.name,
+                          selectedOptions.map(option => option.value)
+                        )
+                      }
+                      getOptionLabel={option => option.label}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={field.label}
+                          error={Boolean(errors[field.name])}
+                          helperText={errors[field.name] || ''}
+                          sx={{ m: '8px 0' }}
+                        />
+                      )}
+                      isOptionEqualToValue={(option, value) => option.value === value.value}
+                    />
+                  );
                 }
 
                 if (field.type === 'input') {
                   return (
                     <TextField
-                      size='small'
+                      size="small"
                       key={index}
                       label={field.label}
                       name={field.name}
                       value={formData[field.name] || ''}
-                      onChange={(e) =>
-                        handleInputChange(field.name, e.target.value)
-                      }
+                      onChange={e => handleInputChange(field.name, e.target.value)}
                       fullWidth
                       sx={{ m: '8px 0' }}
                       error={Boolean(errors[field.name])}
@@ -171,9 +202,7 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
                       label={field.label}
                       name={field.name}
                       value={formData[field.name] || ''}
-                      onChange={(e) =>
-                        handleInputChange(field.name, e.target.value)
-                      }
+                      onChange={e => handleInputChange(field.name, e.target.value)}
                       sx={{ my: 1 }}
                       fullWidth
                       margin="normal"
@@ -190,12 +219,10 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
                   return (
                     <Box key={index} sx={{ padding: '8px 0' }}>
                       <Select
-                        size='small'
+                        size="small"
                         label={field.label}
                         value={formData[field.name] || ''}
-                        onChange={(e) =>
-                          handleInputChange(field.name, e.target.value)
-                        }
+                        onChange={e => handleInputChange(field.name, e.target.value)}
                         fullWidth
                         displayEmpty
                         error={Boolean(errors[field.name])}
@@ -228,10 +255,8 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
                             key={idx}
                             control={
                               <Checkbox
-                                checked={
-                                  formData[field.name]?.[option.value] || false
-                                }
-                                onChange={(e) =>
+                                checked={formData[field.name]?.[option.value] || false}
+                                onChange={e =>
                                   handleCheckboxChange(
                                     field.name,
                                     option.value,
@@ -260,9 +285,7 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
                       <RadioGroup
                         row={field.horizontal}
                         value={formData[field.name] || ''}
-                        onChange={(e) =>
-                          handleInputChange(field.name, e.target.value)
-                        }
+                        onChange={e => handleInputChange(field.name, e.target.value)}
                       >
                         {field.options.map((option, idx) => (
                           <FormControlLabel
@@ -287,13 +310,11 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
                     <TextField
                       key={index}
                       type="date"
-                      size='small'
+                      size="small"
                       label={field.label}
                       name={field.name}
                       value={formData[field.name] || ''}
-                      onChange={(e) =>
-                        handleInputChange(field.name, e.target.value)
-                      }
+                      onChange={e => handleInputChange(field.name, e.target.value)}
                       fullWidth
                       margin="normal"
                       InputLabelProps={{
@@ -305,14 +326,28 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
                     />
                   );
                 }
+
                 return null;
               })
             )}
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'end', p: 2, py: 1, borderTop: 'thin solid var(--background_1)', gap: 1 }}>
-            <Button onClick={handleClose} disabled={isLoading}>Thoát</Button>
-            <Button onClick={!isLoading ? handleSave : null} disabled={isLoading}>Lưu</Button>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'end',
+              p: 2,
+              py: 1,
+              borderTop: 'thin solid var(--background_1)',
+              gap: 1,
+            }}
+          >
+            <Button onClick={handleClose} disabled={isLoading}>
+              Thoát
+            </Button>
+            <Button onClick={!isLoading ? handleSave : null} disabled={isLoading}>
+              Lưu
+            </Button>
           </Box>
         </Box>
       </Dialog>
@@ -331,13 +366,14 @@ Popup_Form.propTypes = {
         'checkbox',
         'radio',
         'date',
+        'multi-select',
       ]).isRequired,
       name: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
       options: PropTypes.arrayOf(
         PropTypes.shape({
           label: PropTypes.string,
-          value: PropTypes.string,
+          value: PropTypes.any,
         })
       ),
       rows: PropTypes.number,
@@ -346,8 +382,8 @@ Popup_Form.propTypes = {
         dependsOn: PropTypes.string,
         value: PropTypes.any,
       }),
-      required: PropTypes.bool, // Thuộc tính mới
-      defaultValue: PropTypes.any, // Thuộc tính mới
+      required: PropTypes.bool,
+      defaultValue: PropTypes.any,
     })
   ).isRequired,
   onSave: PropTypes.func.isRequired,

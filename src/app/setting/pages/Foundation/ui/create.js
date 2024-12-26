@@ -20,7 +20,12 @@ export default function Fount_Create({ }) {
       options: [
         { value: 'Facebook', label: 'Facebook' },
         { value: 'Instagram', label: 'Instagram' },
-        { value: 'Youtube', label: 'Youtube' }
+        { value: 'Youtube', label: 'Youtube' },
+        { value: 'Zalo', label: 'Zalo' },
+        { value: 'Website', label: 'Website' },
+        { value: 'Email', label: 'Email' },
+        { value: 'LinkedIn', label: 'LinkedIn' },
+        { value: 'Tiktok', label: 'Tiktok' }
       ],
     },
     {
