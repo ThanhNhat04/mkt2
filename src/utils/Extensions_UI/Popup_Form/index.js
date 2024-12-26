@@ -174,6 +174,7 @@ export default function Popup_Form({ button, title, fields, onSave, isLoading = 
                       onChange={(e) =>
                         handleInputChange(field.name, e.target.value)
                       }
+                      sx={{ my: 1 }}
                       fullWidth
                       margin="normal"
                       multiline

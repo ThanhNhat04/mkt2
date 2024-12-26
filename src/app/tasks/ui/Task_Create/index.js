@@ -11,15 +11,21 @@ import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 import AddIcon from '@mui/icons-material/Add';
+import fetchApi from '@/utils/API_suport/fetchData';
+import Autocomplete from '@mui/material/Autocomplete';
+import Chip from '@mui/material/Chip';
 
-export default function TaskCreate({ dataProject, users, dataType, token, user, projects }) {
-
+export default function TaskCreate({ dataProject, users, dataType, token, user, projects, dataFound }) {
+  const [selectedF, setSelectedF] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [mesE, setMesE] = useState('');
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [aiError, setAiError] = useState('');
 
+  const handleSelectionChange = (event, value) => {
+    setSelectedF(value);
+  };
   // Danh sách project, type, person
   const project = dataProject.map((item) => ({
     label: item.name,
@@ -138,12 +144,12 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
       }
     }
     formData.checker = h
-
     if (!validateForm()) {
       setOpenx(true);
       return;
     }
     setIsLoading(true);
+
     try {
       const response = await fetch(`https://todo.tr1nh.net/api/task`, {
         method: 'POST',
@@ -153,10 +159,19 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
         },
         body: JSON.stringify(formData),
       });
-
       if (response.ok) {
+        let id = await response.json()
+        id = id.data._id
+        if (selectedF.length > 0) {
+          console.log(selectedF);
+
+          await fetchApi('/task_create', {
+            method: 'POST',
+            body: JSON.stringify({ _id: id, foundation: selectedF })
+          })
+        }
         handleClose();
-        window.location.reload();
+        // window.location.reload();
       } else {
         setMesE('Tạo công việc không thành công!');
         setOpenx(true);
@@ -167,7 +182,8 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
     } finally {
       setIsLoading(false);
     }
-  };
+  }
+
 
   // ==============================
   //  6. Gọi OpenAI (nếu cần)
@@ -351,27 +367,142 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
                 size="small"
                 sx={{ my: 1 }}
               />
+              <Autocomplete
+                multiple
+                disablePortal
+                options={dataFound}
+                size="small"
+                value={selectedF}
+                onChange={handleSelectionChange}
+                isOptionEqualToValue={(option, value) => option._id === value._id}
+                getOptionLabel={(option) => option.name}
+                renderTags={(tagValue, getTagProps, index) => {
+                  if (tagValue.length === 0) return null;
+                  const visibleTag = tagValue[0];
+                  const remainingCount = tagValue.length - 1;
+
+                  return (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexWrap: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Chip
+                        size="small"
+                        label={visibleTag.name}
+                        {...getTagProps({ index: 0 })}
+                      />
+                      {remainingCount > 0 && (
+                        <Chip
+                          key={index}
+                          size="small"
+                          label={`+${remainingCount} nền tảng`}
+                          sx={{
+                            backgroundColor: "#ddd",
+                            cursor: "pointer",
+                            color: '#282828',
+                            marginLeft: 2,
+                          }}
+                        />
+                      )}
+                    </Box>
+                  );
+                }}
+                renderInput={(params, index) => (
+                  <TextField
+                    {...params}
+                    key={index}
+                    label="Chọn nền tảng"
+                    variant="filled"
+                    placeholder="Nhập tên nền tảng..."
+                    sx={{
+                      "& .MuiInputBase-root": {
+                        height: "57px",
+                        width: '100%'
+                      },
+                    }}
+                  />
+                )}
+              />
+              {/* <Autocomplete
+                multiple
+                disablePortal
+                options={found}
+                size="small"
+                sx={{ width: "350px" }}
+                value={selectedF}
+                onChange={(event, value) => setSelectedF(value)}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={(option) =>
+                  `${option.name} (${option.tasks} công việc)`
+                }
+                renderTags={(tagValue, getTagProps) => {
+                  if (tagValue.length === 0) {
+                    return null;
+                  }
+
+                  const visibleTag = tagValue[0]; // Hiển thị tag đầu tiên
+                  const remainingCount = tagValue.length - 1; // Số lượng tag còn lại
+
+                  return (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexWrap: "nowrap", // Ngăn xuống dòng
+                        overflow: "hidden", // Ẩn phần thừa
+                        textOverflow: "ellipsis", // Thêm dấu "..." nếu quá dài
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Chip
+                        size="small"
+                        label={`${visibleTag.name} (${visibleTag.tasks} công việc)`}
+                        {...getTagProps({ index: 0 })}
+                      />
+                      {remainingCount > 0 && (
+                        <Chip
+                          size="small"
+                          label={`+${remainingCount} lựa chọn`}
+                          sx={{
+                            backgroundColor: "#f0f0f0",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                          }}
+                        />
+                      )}
+                    </Box>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Chọn dự án"
+                    sx={{
+                      "& .MuiInputBase-root": {
+                        height: "40px", // Cố định chiều cao input
+                        overflow: "hidden", // Ẩn phần nội dung tràn
+                      },
+                    }}
+                  />
+                )}
+              /> */}
 
               {/* Ghi chú */}
-              <TextField
-                label="Ghi chú"
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange('notes')}
-                multiline
-                rows={2}
-                fullWidth
-                variant="filled"
-                size="small"
-                sx={{ my: 1 }}
-              />
+
             </Grid>
 
             {/* Cột Phải */}
             <Grid item xs={12} sm={6}>
               {/* Nút gọi AI */}
               <Button
-                sx={{ mb: '18px' }}
+                sx={{ mb: '8px' }}
                 onClick={fetchAISuggestions}
                 variant="outlined"
                 color="primary"
@@ -389,12 +520,24 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
                 onChange={handleChange('detail')}
                 required
                 multiline
-                rows={16}
+                rows={12}
                 fullWidth
               />
               {aiError && (
                 <p style={{ color: 'red', marginTop: '8px' }}>{aiError}</p>
               )}
+              <TextField
+                label="Ghi chú"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange('notes')}
+                multiline
+                rows={2}
+                fullWidth
+                variant="filled"
+                size="small"
+                sx={{ my: 1 }}
+              />
             </Grid>
           </Grid>
         </Box>

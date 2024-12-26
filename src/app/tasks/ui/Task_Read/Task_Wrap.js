@@ -30,6 +30,7 @@ export default function Wrap_table({
   token,
   user,
   users,
+  dataFound
 }) {
   // 1) Tính số lượng task theo taskCategory
   // ---------------------------------------------------------------------------
@@ -338,6 +339,7 @@ export default function Wrap_table({
             dataProject={result}
             token={token}
             user={user.id}
+            dataFound={dataFound}
           />
         </div>
 
@@ -398,6 +400,9 @@ export default function Wrap_table({
         </Box>
         <Box sx={{ color: "white", fontSize: "12px", fontWeight: "500", flex: ".6" }}>
           DUYỆT
+        </Box>
+        <Box sx={{ color: "white", fontSize: "12px", fontWeight: "500", flex: ".6", textAlign: "center", }}>
+          NỀN TẢNG
         </Box>
         <Box
           sx={{

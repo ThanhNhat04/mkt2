@@ -27,6 +27,8 @@ import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import Button from '@mui/material/Button'; // Thêm button MUI
 import fetchApi from '@/utils/API_suport/fetchData';
 import { Update_taskclone } from '@/app/forms'
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 
 // HÀM RÚT GỌN TÊN
 function abbreviateName(fullName) {
@@ -265,6 +267,19 @@ export function Task_Detailsb({ data, projectName, taskType, linkdrive }) {
 }
 
 function UI_Student_List({ data, types, dataType, userss, token, user, project }) {
+
+  const uniqueTypes = [...new Set(data.foundation.map((item) => item.type))];
+
+  const renderIcon = (type, index) => {
+    switch (type) {
+      case 'Facebook':
+        return <FacebookRoundedIcon key={index} sx={{ color: 'var(--main)', fontSize: 24 }} />;
+      case 'Youtube':
+        return <YouTubeIcon key={index} sx={{ color: 'red', fontSize: 24 }} />;
+      default:
+        return null;
+    }
+  };
   let tr = 0
   let al = 0
   let pe = 0
@@ -278,10 +293,13 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
     pe = 0 + '%'
   }
   else {
-    pe = tr / al * 100 + '%'
-  }
-  console.log(pe);
 
+    pe = tr / al * 100
+    pe = parseFloat(Number(pe).toFixed(2))
+    pe = pe + '%'
+  }
+
+  // pe = parseFloat(Number(pe).toFixed(2))
 
   // Lấy doer, userInProject, v.v...
   let doerfull;
@@ -706,7 +724,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
           },
         }}
       >
-        <div style={{ padding: '14px 0 14px 8px', display: 'flex', flex: 5.7 }} onClick={openSubTask}>
+        <div style={{ padding: '14px 0 14px 8px', display: 'flex', flex: 6.3 }} onClick={openSubTask}>
           <Box sx={{ flex: '.7', display: 'flex', alignItems: 'center' }}>
             <p style={{ fontSize: 14 }}>
               {projects.length > 15 ? `${projects.slice(0, 15)}...` : projects}
@@ -739,6 +757,22 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project }
 
           <Box sx={{ flex: '.6', display: 'flex', alignItems: 'center', color: 'var(--text)' }}>
             <p style={{ fontSize: 14 }}>{abbreviateName(users)}</p>
+          </Box>
+          <Box
+            sx={{
+              flex: '.6',
+              display: 'flex',
+              alignItems: 'center',
+              color: 'var(--text)',
+              justifyContent: 'center',
+              gap: 1, // Khoảng cách giữa các icon
+            }}
+          >
+            {uniqueTypes.length > 0 ? (
+              uniqueTypes.map((type, index) => renderIcon(type, index)) // Hiển thị icon cho từng type
+            ) : (
+              <p style={{ fontSize: 14 }}>Trống</p>
+            )}
           </Box>
         </div>
 

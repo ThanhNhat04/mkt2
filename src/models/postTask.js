@@ -13,6 +13,10 @@ const postTask = new Schema({
   checkerDone: { type: Boolean },
   linkDrive: { type: String },
   taskCategory: { type: Schema.Types.ObjectId },
+  foundation: {
+    type: Array,
+    default: []
+  },
   subTask: {
     type: Array,
     default: []

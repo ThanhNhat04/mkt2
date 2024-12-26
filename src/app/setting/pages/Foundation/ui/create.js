@@ -6,45 +6,56 @@ import Box from '@mui/material/Box';
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
+import fetchApi from '@/utils/API_suport/fetchData';
 
-export default function Fount_Create({ department, user, token }) {
+export default function Fount_Create({ }) {
+
   const [isLoading, setIsLoading] = useState(false);
   const fields = [
     {
+      type: 'select',
+      name: 'type',
+      label: 'Nền tảng',
+      required: true,
+      options: [
+        { value: 'Facebook', label: 'Facebook' },
+        { value: 'Instagram', label: 'Instagram' },
+        { value: 'Youtube', label: 'Youtube' }
+      ],
+    },
+    {
       type: 'input',
       name: 'name',
-      label: 'Tên dự án',
+      label: 'Tên nền tảng',
       required: true,
     },
     {
-      type: 'select',
-      name: 'piority',
-      label: 'Sự ưu tiên',
+      type: 'input',
+      name: 'banner',
+      label: 'Link hình ảnh',
       required: true,
-      options: [
-        { label: '1', value: '1' },
-        { label: '2', value: '2' },
-        { label: '3', value: '3' },
-        { label: '4', value: '4' },
-      ],
+    },
+    {
+      type: 'input',
+      name: 'link',
+      label: 'Link nền tảng',
+      required: true,
     },
     {
       type: 'textarea',
       name: 'description',
-      label: 'Mô tả dự án',
+      label: 'Chi tiết',
       required: true,
-    },
-    {
-      type: 'textarea',
-      name: 'notes',
-      label: 'Ghi chú',
-      required: false,
-    },
+    }
   ];
 
   const handleSave = async (data) => {
     setIsLoading(true)
-   
+    console.log(data);
+
+    try {
+      await fetchApi('/found_create', { method: 'POST', body: JSON.stringify(data) });
+    } catch (error) { console.log(error) }
     setIsLoading(false)
   };
 
@@ -53,11 +64,11 @@ export default function Fount_Create({ department, user, token }) {
       <Box sx={{ width: 'max-content', height: '100%' }}>
         <Popup_Form
           button={
-            <div className='flexCenter' style={{ height: 39, background: 'var(--main)', p: 0, borderRadius: 3, cursor: 'pointer', color: 'white', padding: '0 16px', gap: 8 }} >
-              <AddBoxRoundedIcon sx={{ color: 'white', fontSize: 18 }} /> Thêm nền tảng
+            <div className='flexCenter' style={{ height: 39, background: 'white', p: 0, borderRadius: 3, cursor: 'pointer', color: 'var(--main)', padding: '0 16px', gap: 8 }} >
+              <AddBoxRoundedIcon sx={{ color: 'var(--main)', fontSize: 18 }} /> Thêm nền tảng
             </div>
           }
-          title="Tạo dự án"
+          title="Tạo thêm nền tảng"
           fields={fields}
           onSave={handleSave}
         />

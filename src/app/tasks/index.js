@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Unstable_Grid2';
 import Wrap_table from './ui/Task_Read/Task_Wrap';
 import Box from '@mui/material/Box';
-import { Project_Read_all, Task_Read_all, Task_Read_Type, User_Read_all } from '@/app/data'
+import { Found_Read_all, Project_Read_all, Task_Read_all, Task_Read_Type, User_Read_all } from '@/app/data'
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -13,6 +13,7 @@ export default async function Task() {
   const dataUser = await User_Read_all()
   const dataProject = await Project_Read_all()
   const dataTaskType = await Task_Read_Type()
+  const dataFound = await Found_Read_all()
   
   let g = [[], [], []]
   dataTask ? dataTask.forEach(e => {
@@ -50,7 +51,7 @@ export default async function Task() {
         </Grid>
         <Grid xs={12} sx={{ p: 1 }}>
           <Wrap_table dataTasks={dataTask} dataProject={dataProject} dataTaskType={dataTaskType} token={token.value}
-            user={user} users={dataUser} />
+            user={user} users={dataUser} dataFound={dataFound}/>
         </Grid>
       </Grid>
     </>
