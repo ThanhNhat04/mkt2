@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import CardContent from "@mui/material/CardContent";
 import YouTubeIcon from '@mui/icons-material/YouTube';
+import LanguageIcon from '@mui/icons-material/Language';
 
 export function Foundation({ data }) {
   const [filteredData, setFilteredData] = useState(data); // State cho dữ liệu được lọc
@@ -70,16 +71,33 @@ export function Foundation({ data }) {
                 padding: '8px',
                 display: 'flex',
                 alignItems: 'center',
-                background: activeFilter === "Youtube" ? 'var(--main)' : 'transparent',
+                background: activeFilter === "Website" ? 'var(--main)' : 'transparent',
                 border: 'none',
                 borderRadius: '3px',
-                color: activeFilter === "Youtube" ? 'white' : 'var(--text)',
+                color: activeFilter === "Website" ? 'white' : 'var(--text)',
                 gap: 16,
                 cursor: 'pointer'
               }}
-              onClick={() => handleFilter("Youtube")}
+              onClick={() => handleFilter("Website")}
             >
-              <YouTubeIcon />Youtube
+              <LanguageIcon />Website
+            </div>
+            <div
+              style={{
+                width: 'calc(100% - 16px)',
+                padding: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                background: activeFilter === "Tiktok" ? 'var(--main)' : 'transparent',
+                border: 'none',
+                borderRadius: '3px',
+                color: activeFilter === "Tiktok" ? 'white' : 'var(--text)',
+                gap: 16,
+                cursor: 'pointer'
+              }}
+              onClick={() => handleFilter("Tiktok")}
+            >
+              {tiktok}Tiktok
             </div>
           </div>
         </Grid>
@@ -176,3 +194,10 @@ export function Foundation({ data }) {
     </Card>
   );
 }
+
+
+const tiktok = (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width={21} height={21} style={{ color: '#4a4951' }}>
+    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z" />
+  </svg>
+)

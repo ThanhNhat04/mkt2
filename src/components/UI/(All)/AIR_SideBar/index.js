@@ -24,8 +24,9 @@ export default function SideBar({ data }) {
   }
 
   if (data.Role == 'Quản lý') path['/personnel'] = "Nhân sự"
-  path["/progress"] = "Hướng dẫn"
   path["/setting"] = "Cài đặt"
+  path["/progress"] = "Hướng dẫn"
+
 
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
