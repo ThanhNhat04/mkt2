@@ -1,13 +1,12 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
-import { Button, Dialog, TextField, Box } from '@mui/material';
+import { Button, Dialog, TextField, Box, Menu, MenuItem } from '@mui/material';
 import { getTodayDate } from '@/app/function';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 import AddIcon from '@mui/icons-material/Add';
@@ -22,6 +21,29 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [aiError, setAiError] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null); // Dropdown state
+  const [prompt, setPrompt] = useState([]); // Prompt state
+  const [promptText, setPromptText] = useState(''); // New state for storing prompt text 
+  
+  useEffect(() => {
+    const fetchPrompt = async () => {
+      try {
+        const response = await fetch('api/prompt_get', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({})
+        });
+        const data = await response.json();
+        setPrompt(data.data);
+      } catch (error) {
+        console.error('Error fetching:', error);
+      }
+    };
+
+    fetchPrompt();
+  }, []);
 
   const handleSelectionChange = (event, value) => {
     setSelectedF(value);
@@ -189,36 +211,70 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
   const fetchAISuggestions = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/openAi', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: 'user',
-              content: `Hãy đề xuất các bước cụ thể để thực hiện công việc khoảng 300 kí tự: ${formData.name}`,
-            },
-          ],
-        }),
-      });
+        let aiContent = promptText || 'Hãy đề xuất các bước cụ thể để thực hiện công việc khoảng 300 kí tự:';
+        // console.log(promptText);
+        // if (formData.name) aiContent += ` {name}`;
+        // // // if (formData.taskCategory) aiContent += ` {taskCategory}`;
+        // // // Convert taskCategory ID to name
+        // // const taskCategoryName = dataType.find(item => item._id === formData.taskCategory)?.name || '';
+        // // if (taskCategoryName) aiContent += ` {taskCategory}`;
 
-      if (!res.ok) {
-        alert('Bạn không có quyền thực hiện tính năng này');
-      } else {
-        const datas = await res.json();
-        const suggestion = datas.choices[0].message.content || 'Không có gợi ý từ AI';
-        setFormData((prev) => ({
-          ...prev,
-          detail: prev.detail + '\n' + suggestion,
-        }));
-      }
+        // if (formData.doer) aiContent += ` {doer}`;
+        // if (formData.startDate) aiContent += ` {startDate}`;
+        // if (formData.endDate) aiContent += ` {endDate}`;
+
+        // let contentWithValues = aiContent
+        //     .replace('{name}', formData.name || '')
+        //     .replace('{taskCategory}', formData.taskCategory || '')
+        //     .replace('{doer}', formData.doer || '')
+        //     .replace('{startDate}', formData.startDate || '')
+        //     .replace('{endDate}', formData.endDate || '');
+
+        // console.log(contentWithValues);
+
+        const res = await fetch('/api/openAi', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                messages: [
+                    {
+                        role: 'user',
+                        content: contentWithValues,
+                    },
+                ],
+            }),
+        });
+
+        if (!res.ok) {
+            alert('Bạn không có quyền thực hiện tính năng này');
+        } else {
+            const datas = await res.json();
+            const suggestion = datas.choices[0].message.content || 'Không có gợi ý từ AI';
+            setFormData((prev) => ({
+                ...prev,
+                detail: prev.detail + '\n' + suggestion,
+            }));
+        }
     } catch (error) {
-      setAiError('Không thể lấy gợi ý từ AI. Vui lòng thử lại sau.');
+        setAiError('Không thể lấy gợi ý từ AI. Vui lòng thử lại sau.');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
+  };
+
+  const handleDropdownClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleDropdownClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuItemClick = (selectedPrompt) => {
+    setPromptText((prev) => prev + '\n' + selectedPrompt.prompt); 
+    handleDropdownClose();
   };
 
   return (
@@ -229,50 +285,49 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
       }}>
         <AddIcon />
       </div>
-      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="xl" fullWidth>
         <div
           className="text_2"
-          style={{ borderBottom: '2px solid var(--background_1)', padding: 16 }}
+          style={{
+            borderBottom: '2px solid var(--background_1)',
+            padding: 16,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
         >
-          Tạo công việc
+          <span>Tạo công việc</span>
+          <div>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end' }}>
+              <Button sx={{ mb: '8px', ml: 1 }} variant="outlined" color="primary" onClick={handleDropdownClick}>
+                Gợi ý prompt AI cho loại công việc
+              </Button>
+              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleDropdownClose}>
+                {prompt.map((item, index) => (
+                  <MenuItem key={index} onClick={() => handleMenuItemClick(item)}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </Menu>
+              <Button sx={{ mb: '8px', mr: 5 }} onClick={fetchAISuggestions} variant="outlined" color="primary" disabled={loading || !formData.name}>
+                {loading ? <CircularProgress size={24} /> : 'Gợi ý từ AI'}
+              </Button>
+            </div>
+          </div>
         </div>
 
         <Box
           sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: '8px 16px', pt: '16px' }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={3.5}>
               {/* Tên công việc */}
-              <TextField
-                size="small"
-                sx={{ paddingBottom: '8px' }}
-                label="Tên công việc *"
-                name="name"
-                value={formData.name}
-                variant="filled"
-                onChange={handleChange('name')}
-                error={!!errors.name}
-                helperText={errors.name}
-                required
-                fullWidth
-              />
+              <TextField size="small" sx={{ paddingBottom: '8px' }} label="Tên công việc *" name="name" value={formData.name} variant="filled" onChange={handleChange('name')} error={!!errors.name} helperText={errors.name} required fullWidth />
 
               {/* Loại công việc */}
-              <FormControl
-                size="small"
-                variant="filled"
-                fullWidth
-                margin="normal"
-                sx={{ my: 1 }}
-                error={!!errors.taskCategory}
-              >
+              <FormControl size="small" variant="filled" fullWidth margin="normal" sx={{ my: 1 }} error={!!errors.taskCategory}>
                 <InputLabel id="taskType-label">Loại công việc *</InputLabel>
-                <Select
-                  labelId="taskType-label"
-                  label="Loại công việc"
-                  value={formData.taskCategory}
-                  onChange={handleChange('taskCategory')}
-                >
+                <Select labelId="taskType-label" label="Loại công việc" value={formData.taskCategory} onChange={handleChange('taskCategory')}>
                   {type.map((t, index) => (
                     <MenuItem key={index} value={t.value}>
                       {t.label}
@@ -282,21 +337,9 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
               </FormControl>
 
               {/* Dự án */}
-              <FormControl
-                size="small"
-                variant="filled"
-                fullWidth
-                margin="normal"
-                sx={{ my: 1 }}
-                error={!!errors.project}
-              >
+              <FormControl size="small" variant="filled" fullWidth margin="normal" sx={{ my: 1 }} error={!!errors.project}>
                 <InputLabel id="project-label">Dự án *</InputLabel>
-                <Select
-                  labelId="project-label"
-                  label="Dự án"
-                  value={formData.project}
-                  onChange={handleChange('project')}
-                >
+                <Select labelId="project-label" label="Dự án" value={formData.project} onChange={handleChange('project')}>
                   {project.map((p) => (
                     <MenuItem key={p.value} value={p.value}>
                       {p.label}
@@ -306,20 +349,9 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
               </FormControl>
 
               {/* Người thực hiện */}
-              <FormControl
-                size="small"
-                variant="filled"
-                fullWidth
-                margin="normal"
-                sx={{ my: 1 }}
-              >
+              <FormControl size="small" variant="filled" fullWidth margin="normal" sx={{ my: 1 }}>
                 <InputLabel id="doer-label">Người thực hiện</InputLabel>
-                <Select
-                  labelId="doer-label"
-                  label="Người thực hiện"
-                  value={formData.doer}
-                  onChange={handleChange('doer')}
-                >
+                <Select labelId="doer-label" label="Người thực hiện" value={formData.doer} onChange={handleChange('doer')}>
                   {person.map((t) => (
                     <MenuItem key={t.value} value={t.value}>
                       {t.label}
@@ -329,254 +361,82 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
               </FormControl>
 
               {/* Thời gian bắt đầu */}
-              <TextField
-                variant="filled"
-                size="small"
-                sx={{ my: 1 }}
-                label="Thời gian bắt đầu *"
-                name="startDate"
-                type="date"
-                value={formData.startDate}
-                onChange={handleChange('startDate')}
-                error={!!errors.startDate}
-                helperText={errors.startDate}
-                required
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
+              <TextField variant="filled" size="small" sx={{ my: 1 }} label="Thời gian bắt đầu *" name="startDate" type="date" value={formData.startDate} onChange={handleChange('startDate')} error={!!errors.startDate} helperText={errors.startDate} required fullWidth InputLabelProps={{ shrink: true }} />
 
               {/* Thời gian kết thúc */}
-              <TextField
-                label="Thời gian kết thúc *"
-                name="endDate"
-                type="date"
-                value={formData.endDate}
-                onChange={handleChange('endDate')}
-                error={!!errors.endDate}
-                helperText={errors.endDate}
-                required
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="filled"
-                size="small"
-                sx={{ my: 1 }}
-              />
-              <Autocomplete
-                multiple
-                disablePortal
-                options={dataFound}
-                size="small"
-                value={selectedF}
-                onChange={handleSelectionChange}
-                isOptionEqualToValue={(option, value) => option._id === value._id}
-                getOptionLabel={(option) => option.name}
-                renderTags={(tagValue, getTagProps, index) => {
-                  if (tagValue.length === 0) return null;
-                  const visibleTag = tagValue[0];
-                  const remainingCount = tagValue.length - 1;
+              <TextField label="Thời gian kết thúc *" name="endDate" type="date" value={formData.endDate} onChange={handleChange('endDate')} error={!!errors.endDate} helperText={errors.endDate} required fullWidth InputLabelProps={{ shrink: true }} variant="filled" size="small" sx={{ my: 1 }} />
+              <Autocomplete multiple disablePortal options={dataFound} size="small" value={selectedF} onChange={handleSelectionChange} isOptionEqualToValue={(option, value) => option._id === value._id} getOptionLabel={(option) => option.name} renderTags={(tagValue, getTagProps, index) => {
+                if (tagValue.length === 0) return null;
+                const visibleTag = tagValue[0];
+                const remainingCount = tagValue.length - 1;
 
-                  return (
-                    <Box
-                      key={index}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexWrap: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      <Chip
-                        size="small"
-                        label={visibleTag.name}
-                        {...getTagProps({ index: 0 })}
-                      />
-                      {remainingCount > 0 && (
-                        <Chip
-                          key={index}
-                          size="small"
-                          label={`+${remainingCount} nền tảng`}
-                          sx={{
-                            backgroundColor: "#ddd",
-                            cursor: "pointer",
-                            color: '#282828',
-                            marginLeft: 2,
-                          }}
-                        />
-                      )}
-                    </Box>
-                  );
-                }}
-                renderInput={(params, index) => (
-                  <TextField
-                    {...params}
-                    key={index}
-                    label="Chọn nền tảng"
-                    variant="filled"
-                    placeholder="Nhập tên nền tảng..."
-                    sx={{
-                      "& .MuiInputBase-root": {
-                        height: "57px",
-                        width: '100%'
-                      },
-                    }}
-                  />
-                )}
-              />
-              {/* <Autocomplete
-                multiple
-                disablePortal
-                options={found}
-                size="small"
-                sx={{ width: "350px" }}
-                value={selectedF}
-                onChange={(event, value) => setSelectedF(value)}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                getOptionLabel={(option) =>
-                  `${option.name} (${option.tasks} công việc)`
-                }
-                renderTags={(tagValue, getTagProps) => {
-                  if (tagValue.length === 0) {
-                    return null;
-                  }
-
-                  const visibleTag = tagValue[0]; // Hiển thị tag đầu tiên
-                  const remainingCount = tagValue.length - 1; // Số lượng tag còn lại
-
-                  return (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexWrap: "nowrap", // Ngăn xuống dòng
-                        overflow: "hidden", // Ẩn phần thừa
-                        textOverflow: "ellipsis", // Thêm dấu "..." nếu quá dài
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      <Chip
-                        size="small"
-                        label={`${visibleTag.name} (${visibleTag.tasks} công việc)`}
-                        {...getTagProps({ index: 0 })}
-                      />
-                      {remainingCount > 0 && (
-                        <Chip
-                          size="small"
-                          label={`+${remainingCount} lựa chọn`}
-                          sx={{
-                            backgroundColor: "#f0f0f0",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                          }}
-                        />
-                      )}
-                    </Box>
-                  );
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Chọn dự án"
-                    sx={{
-                      "& .MuiInputBase-root": {
-                        height: "40px", // Cố định chiều cao input
-                        overflow: "hidden", // Ẩn phần nội dung tràn
-                      },
-                    }}
-                  />
-                )}
-              /> */}
-
-              {/* Ghi chú */}
-
+                return (
+                  <Box key={index} sx={{ display: "flex", alignItems: "center", flexWrap: "nowrap", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <Chip size="small" label={visibleTag.name} {...getTagProps({ index: 0 })} />
+                    {remainingCount > 0 && (
+                      <Chip key={index} size="small" label={`+${remainingCount} nền tảng`} sx={{ backgroundColor: "#ddd", cursor: "pointer", color: '#282828', marginLeft: 2 }} />
+                    )}
+                  </Box>
+                );
+              }} renderInput={(params, index) => (
+                <TextField {...params} key={index} label="Chọn nền tảng" variant="filled" placeholder="Nhập tên nền tảng..." sx={{ "& .MuiInputBase-root": { height: "57px", width: '100%' } }} />
+              )} />
             </Grid>
 
             {/* Cột Phải */}
-            <Grid item xs={12} sm={6}>
-              {/* Nút gọi AI */}
-              <Button
-                sx={{ mb: '8px' }}
-                onClick={fetchAISuggestions}
-                variant="outlined"
-                color="primary"
-                disabled={loading || !formData.name}
-              >
-                {loading ? <CircularProgress size={24} /> : 'Gợi ý từ AI'}
-              </Button>
+            <Grid item xs={12} sm={8.5}>
+              {/* Grid container for Prompt and Chi tiết công việc */}
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  {/* Prompt Field */}
+                  <TextField 
+                    label="Prompt" 
+                    name="Prompt" 
+                    variant="filled" 
+                    onChange={(e) => setPromptText(e.target.value)} 
+                    value={promptText} 
+                    required 
+                    multiline 
+                    rows={14.55} 
+                    fullWidth 
+                  />
+                  {aiError && (
+                    <p style={{ color: 'red', marginTop: '8px' }}>{aiError}</p>
+                  )}
+                </Grid>
+                
+                <Grid item xs={6}>
+                  {/* Chi tiết công việc */}
+                  <TextField label="Chi tiết công việc *" name="details" value={formData.detail} variant="filled" onChange={handleChange('detail')} required multiline rows={14.55} fullWidth />
+                  {aiError && (
+                    <p style={{ color: 'red', marginTop: '8px' }}>{aiError}</p>
+                  )}
+                </Grid>
+              </Grid>
 
-              {/* Chi tiết công việc */}
-              <TextField
-                label="Chi tiết công việc *"
-                name="details"
-                value={formData.detail}
-                variant="filled"
-                onChange={handleChange('detail')}
-                required
-                multiline
-                rows={12}
-                fullWidth
-              />
-              {aiError && (
-                <p style={{ color: 'red', marginTop: '8px' }}>{aiError}</p>
-              )}
-              <TextField
-                label="Ghi chú"
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange('notes')}
-                multiline
-                rows={2}
-                fullWidth
-                variant="filled"
-                size="small"
-                sx={{ my: 1 }}
-              />
+              {/* Ghi chú */}
+              <TextField label="Ghi chú" name="notes" value={formData.notes} onChange={handleChange('notes')} multiline rows={1.4} fullWidth variant="filled" size="small" sx={{ my: 1 }} />
             </Grid>
           </Grid>
         </Box>
 
-        {/* Footer của dialog tạo công việc */}
-        <div
-          style={{
-            borderTop: '2px solid var(--background_1)',
-            padding: 16,
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-          }}
-        >
+        {/* Footer của dialog tạo c��ng việc */}
+        <div style={{ borderTop: '2px solid var(--background_1)', padding: 16, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button onClick={handleClose}>Thoát</Button>
           <Button onClick={handleSave} variant="contained" color="primary">
             Tạo công việc
           </Button>
         </div>
       </Dialog>
-
-      {/* Dialog sau: Thông báo (chỉ mở khi form chưa đủ hoặc gọi API lỗi) */}
+      {/* Dialog sau: Thông báo (chỉ  khi form chưa đủ hoặc gọi API lỗi) */}
       <Dialog open={openx} onClose={handleClosex} maxWidth="sm" fullWidth>
-        <div
-          className="text_2"
-          style={{ borderBottom: '2px solid var(--background_1)', padding: 16 }}
-        >
+        <div className="text_2" style={{ borderBottom: '2px solid var(--background_1)', padding: 16 }}>
           Thông báo
         </div>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: '16px' }}>
           <p className="text_3_m">{mesE}</p>
         </Box>
-        <div
-          style={{
-            borderTop: '2px solid var(--background_1)',
-            padding: '8px 16px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-          }}
-        >
+        <div style={{ borderTop: '2px solid var(--background_1)', padding: '8px 16px', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button onClick={handleClosex} variant="contained" color="primary">
             Tiếp tục
           </Button>
@@ -584,10 +444,7 @@ export default function TaskCreate({ dataProject, users, dataType, token, user, 
       </Dialog>
 
       {/* Loading Backdrop */}
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2000 }}
-        open={isLoading}
-      >
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2000 }} open={isLoading}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </>

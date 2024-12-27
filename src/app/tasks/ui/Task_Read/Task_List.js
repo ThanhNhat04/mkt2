@@ -391,8 +391,7 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project, 
     label: item.name,
     value: item,
   }));
-  console.log(foundup);
-  console.log(maxfoind);
+
 
 
   let doers;
@@ -572,7 +571,6 @@ function UI_Student_List({ data, types, dataType, userss, token, user, project, 
   };
 
   const handleSave = async (datas) => {
-    console.log(datas);
 
     setIsLoading(true)
     try {
